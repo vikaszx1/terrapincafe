@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from 'react'
-import { menuItems as defaultMenu } from '../data/menuData'
+import { menuItems as defaultMenu, menuCategories as defaultCategories } from '../data/menuData'
 
 // ── Defaults ──────────────────────────────────────────────────────────────────
 export const DEFAULT_RES_CONFIG = {
@@ -43,25 +43,35 @@ const load = (key, fallback) => {
   try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : fallback }
   catch { return fallback }
 }
-const save = (key, val) => localStorage.setItem(key, JSON.stringify(val))
+const save = (key, val) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(val))
+  } catch (e) {
+    console.error(`Storage quota exceeded saving "${key}". Image may not persist.`, e)
+  }
+}
 
 // ── Context ───────────────────────────────────────────────────────────────────
 const SiteDataContext = createContext(null)
 
 export function SiteDataProvider({ children }) {
-  const [menu,      setMenuRaw]      = useState(() => load('tc_menu',      seedMenu()))
-  const [hours,     setHoursRaw]     = useState(() => load('tc_hours',     DEFAULT_HOURS))
-  const [about,     setAboutRaw]     = useState(() => load('tc_about',     DEFAULT_ABOUT))
-  const [tags,      setTagsRaw]      = useState(() => load('tc_tags',      DEFAULT_TAGS))
-  const [resConfig, setResConfigRaw] = useState(() => load('tc_res_cfg',   DEFAULT_RES_CONFIG))
-  const [bookings,  setBookingsRaw]  = useState(() => load('tc_bookings',  []))
+  const [menu,             setMenuRaw]             = useState(() => load('tc_menu',          seedMenu()))
+  const [hours,            setHoursRaw]            = useState(() => load('tc_hours',         DEFAULT_HOURS))
+  const [about,            setAboutRaw]            = useState(() => load('tc_about',         DEFAULT_ABOUT))
+  const [tags,             setTagsRaw]             = useState(() => load('tc_tags',          DEFAULT_TAGS))
+  const [categories,       setCategoriesRaw]       = useState(() => load('tc_categories',    defaultCategories))
+  const [resConfig,        setResConfigRaw]        = useState(() => load('tc_res_cfg',       DEFAULT_RES_CONFIG))
+  const [bookings,         setBookingsRaw]         = useState(() => load('tc_bookings',      []))
+  const [hiddenCategories, setHiddenCategoriesRaw] = useState(() => load('tc_hidden_cats',  []))
 
-  const setMenu      = v => { setMenuRaw(v);      save('tc_menu',     v) }
-  const setHours     = v => { setHoursRaw(v);     save('tc_hours',    v) }
-  const setAbout     = v => { setAboutRaw(v);     save('tc_about',    v) }
-  const setTags      = v => { setTagsRaw(v);      save('tc_tags',     v) }
-  const setResConfig = v => { setResConfigRaw(v); save('tc_res_cfg',  v) }
-  const setBookings  = v => { setBookingsRaw(v);  save('tc_bookings', v) }
+  const setMenu             = v => { setMenuRaw(v);             save('tc_menu',         v) }
+  const setHours            = v => { setHoursRaw(v);            save('tc_hours',        v) }
+  const setAbout            = v => { setAboutRaw(v);            save('tc_about',        v) }
+  const setTags             = v => { setTagsRaw(v);             save('tc_tags',         v) }
+  const setCategories       = v => { setCategoriesRaw(v);       save('tc_categories',   v) }
+  const setResConfig        = v => { setResConfigRaw(v);        save('tc_res_cfg',      v) }
+  const setBookings         = v => { setBookingsRaw(v);         save('tc_bookings',     v) }
+  const setHiddenCategories = v => { setHiddenCategoriesRaw(v); save('tc_hidden_cats',  v) }
 
   function addBooking(booking) {
     const next = [...bookings, { ...booking, id: crypto.randomUUID(), createdAt: new Date().toISOString(), status: 'confirmed' }]
@@ -87,7 +97,9 @@ export function SiteDataProvider({ children }) {
   const resetToDefaults = () => {
     setMenu(seedMenu()); setHours(DEFAULT_HOURS)
     setAbout(DEFAULT_ABOUT); setTags(DEFAULT_TAGS)
+    setCategories(defaultCategories)
     setResConfig(DEFAULT_RES_CONFIG)
+    setHiddenCategories([])
     // bookings intentionally not reset
   }
 
@@ -97,8 +109,10 @@ export function SiteDataProvider({ children }) {
       hours, setHours,
       about, setAbout,
       tags, setTags,
+      categories, setCategories,
       resConfig, setResConfig,
       bookings, setBookings, addBooking, cancelBooking, restoreBooking, bookedSeats,
+      hiddenCategories, setHiddenCategories,
       resetToDefaults,
     }}>
       {children}

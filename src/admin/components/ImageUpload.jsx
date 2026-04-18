@@ -1,10 +1,42 @@
 import { useRef, useState } from 'react'
 
-const MAX_MB = 2
+const MAX_MB      = 3
+const MAX_WIDTH   = 1400   // px — resize larger images down
+const JPEG_Q      = 0.82   // JPEG quality (0–1)
+
+/**
+ * Compresses an image File via an offscreen canvas.
+ * Output is always JPEG regardless of input format.
+ * Typical result: 2-3 MB photo → 150-250 KB base64.
+ */
+function compressImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onerror = reject
+    reader.onload = ev => {
+      const img = new Image()
+      img.onerror = reject
+      img.onload = () => {
+        let { width, height } = img
+        if (width > MAX_WIDTH) {
+          height = Math.round(height * MAX_WIDTH / width)
+          width  = MAX_WIDTH
+        }
+        const canvas = document.createElement('canvas')
+        canvas.width  = width
+        canvas.height = height
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height)
+        resolve(canvas.toDataURL('image/jpeg', JPEG_Q))
+      }
+      img.src = ev.target.result
+    }
+    reader.readAsDataURL(file)
+  })
+}
 
 /**
  * Dual-mode image input:
- *  - Click "Upload Image" → file picker → converts to base64 → stored in localStorage via context
+ *  - Click "Upload Image" → file picker → compresses via canvas → stores as JPEG base64
  *  - Or paste a URL manually as fallback
  */
 export default function ImageUpload({ value, onChange, label = 'Image', previewStyle = {} }) {
@@ -13,10 +45,11 @@ export default function ImageUpload({ value, onChange, label = 'Image', previewS
   const [loading, setLoading] = useState(false)
   const [mode, setMode]       = useState('upload') // 'upload' | 'url'
 
-  function handleFile(e) {
+  async function handleFile(e) {
     const file = e.target.files?.[0]
     if (!file) return
     setError('')
+    e.target.value = '' // reset so same file can be re-selected
 
     if (!file.type.startsWith('image/')) {
       setError('Please select an image file (JPG, PNG, WebP, etc.)')
@@ -30,19 +63,14 @@ export default function ImageUpload({ value, onChange, label = 'Image', previewS
     }
 
     setLoading(true)
-    const reader = new FileReader()
-    reader.onload = () => {
-      onChange(reader.result) // base64 data URL
+    try {
+      const compressed = await compressImage(file)
+      onChange(compressed)
+    } catch {
+      setError('Failed to process image. Please try another file.')
+    } finally {
       setLoading(false)
     }
-    reader.onerror = () => {
-      setError('Failed to read file. Please try again.')
-      setLoading(false)
-    }
-    reader.readAsDataURL(file)
-
-    // Reset input so the same file can be re-selected if needed
-    e.target.value = ''
   }
 
   function handleDrop(e) {

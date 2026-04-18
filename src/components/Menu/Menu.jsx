@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { menuCategories } from '../../data/menuData'
 import { useSiteData } from '../../context/SiteDataContext'
 import './Menu.scss'
 
@@ -36,8 +35,9 @@ function MenuCard({ name, price, desc, tags, image, allTags }) {
 }
 
 export default function Menu() {
-  const [active, setActive] = useState('starters')
-  const { menu: menuItems, tags: allTags } = useSiteData()
+  const { menu: menuItems, tags: allTags, categories, hiddenCategories } = useSiteData()
+  const visibleCategories = categories.filter(c => !hiddenCategories.includes(c.id))
+  const [active, setActive] = useState(() => visibleCategories[0]?.id || '')
 
   return (
     <section id="menu" className="menu">
@@ -54,7 +54,7 @@ export default function Menu() {
 
         {/* ── Tabs ── */}
         <div className="menu__tabs reveal" role="tablist">
-          {menuCategories.map(({ id, label }) => (
+          {visibleCategories.map(({ id, label }) => (
             <button
               key={id}
               role="tab"

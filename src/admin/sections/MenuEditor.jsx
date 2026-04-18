@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useSiteData } from '../../context/SiteDataContext'
-import { menuCategories } from '../../data/menuData'
 import ImageUpload from '../components/ImageUpload'
 import { useConfirm } from '../components/ConfirmDialog'
 
@@ -85,10 +84,43 @@ function ItemModal({ item, onSave, onClose, allTags }) {
 }
 
 export default function MenuEditor({ onSave }) {
-  const { menu, setMenu, tags: allTags } = useSiteData()
-  const [activeTab, setActiveTab] = useState('starters')
-  const [editing, setEditing]     = useState(null) // null | item object
-  const confirm                   = useConfirm()
+  const { menu, setMenu, tags: allTags, categories, setCategories, hiddenCategories, setHiddenCategories } = useSiteData()
+  const [activeTab, setActiveTab] = useState(() => categories[0]?.id || 'starters')
+  const [editing, setEditing]     = useState(null)
+  const [newCatName, setNewCatName] = useState('')
+  const confirm = useConfirm()
+
+  function toggleCategory(id) {
+    const next = hiddenCategories.includes(id)
+      ? hiddenCategories.filter(c => c !== id)
+      : [...hiddenCategories, id]
+    setHiddenCategories(next)
+    onSave()
+  }
+
+  function addCategory() {
+    const label = newCatName.trim()
+    if (!label) return
+    const id = label.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '')
+    if (categories.find(c => c.id === id)) return alert(`A category with key "${id}" already exists.`)
+    setCategories([...categories, { id, label }])
+    setNewCatName('')
+    onSave()
+  }
+
+  async function deleteCategory(id) {
+    const count = (menu[id] || []).length
+    const ok = await confirm(
+      `Delete "${categories.find(c => c.id === id)?.label}"?${count > 0 ? ` This will also remove all ${count} item(s) inside it.` : ''}`,
+      { title: 'Delete Category', danger: true }
+    )
+    if (!ok) return
+    setCategories(categories.filter(c => c.id !== id))
+    const next = { ...menu }; delete next[id]
+    setMenu(next)
+    if (activeTab === id) setActiveTab(categories.find(c => c.id !== id)?.id || '')
+    onSave()
+  }
 
   function saveItem(item) {
     const items = menu[activeTab] || []
@@ -112,8 +144,57 @@ export default function MenuEditor({ onSave }) {
 
   return (
     <div>
+      {/* ── Category Visibility + Add ── */}
+      <div className="cat-visibility">
+        <div className="cat-visibility__title">Category Visibility</div>
+        <div className="cat-visibility__list">
+          {categories.map(({ id, label }) => {
+            const visible = !hiddenCategories.includes(id)
+            return (
+              <div key={id} className={`cat-visibility__row ${!visible ? 'cat-visibility__row--hidden' : ''}`}>
+                <div className="cat-visibility__info">
+                  <span className="cat-visibility__name">{label}</span>
+                  <span className="cat-visibility__count">{(menu[id] || []).length} items</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <button
+                    className={`cat-toggle ${visible ? 'cat-toggle--on' : 'cat-toggle--off'}`}
+                    onClick={() => toggleCategory(id)}
+                    title={visible ? 'Hide on live site' : 'Show on live site'}
+                  >
+                    <span className="cat-toggle__track">
+                      <span className="cat-toggle__thumb" />
+                    </span>
+                    <span className="cat-toggle__label">{visible ? 'Visible' : 'Hidden'}</span>
+                  </button>
+                  <button
+                    className="btn btn--danger btn--sm"
+                    onClick={() => deleteCategory(id)}
+                    title="Delete category"
+                    style={{ padding: '0.25rem 0.6rem', fontSize: '0.72rem' }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Add new category */}
+        <div className="cat-visibility__add">
+          <input
+            value={newCatName}
+            onChange={e => setNewCatName(e.target.value)}
+            placeholder="New category name (e.g. Raw Bar)"
+            onKeyDown={e => e.key === 'Enter' && addCategory()}
+          />
+          <button className="btn btn--primary btn--sm" onClick={addCategory}>+ Add Category</button>
+        </div>
+      </div>
+
       <div className="menu-editor__tabs">
-        {menuCategories.map(({ id, label }) => (
+        {categories.map(({ id, label }) => (
           <button key={id} className={activeTab === id ? 'active' : ''} onClick={() => setActiveTab(id)}>
             {label} ({(menu[id] || []).length})
           </button>
@@ -161,7 +242,7 @@ export default function MenuEditor({ onSave }) {
 
       <div className="menu-editor__add-bar">
         <button className="btn btn--primary" onClick={() => setEditing(BLANK_ITEM)}>
-          + Add Item to {menuCategories.find(c => c.id === activeTab)?.label}
+          + Add Item to {categories.find(c => c.id === activeTab)?.label}
         </button>
       </div>
 

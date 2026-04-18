@@ -773,6 +773,135 @@ $sans:         -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
 }
 
+// ── Category Visibility ───────────────────────────────────────────────────────
+.cat-visibility {
+  border: 1px solid $border;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+
+  &__title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: $muted;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    padding: 0.75rem 1rem;
+    background: $bg;
+    border-bottom: 1px solid $border;
+  }
+
+  &__list { display: flex; flex-direction: column; }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid $border;
+    transition: background 0.15s;
+    gap: 1rem;
+
+    &:last-child { border-bottom: none; }
+    &:hover { background: $bg; }
+
+    &--hidden { opacity: 0.5; }
+  }
+
+  &__info {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  &__name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: $text;
+  }
+
+  &__count {
+    font-size: 0.72rem;
+    color: $muted;
+    background: $bg;
+    border: 1px solid $border;
+    border-radius: 20px;
+    padding: 0.1rem 0.5rem;
+  }
+
+  &__add {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-top: 1px dashed $border;
+    background: $bg;
+    flex-wrap: wrap;
+
+    input {
+      flex: 1;
+      min-width: 180px;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid $border;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-family: $sans;
+      outline: none;
+      background: $white;
+      &:focus { border-color: $accent; }
+    }
+  }
+}
+
+// Toggle switch
+.cat-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+
+  &__label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    min-width: 42px;
+  }
+
+  &--on  &__label { color: #059669; }
+  &--off &__label { color: $muted;  }
+
+  &__track {
+    width: 40px;
+    height: 22px;
+    border-radius: 11px;
+    background: #e2e8f0;
+    position: relative;
+    display: block;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+
+  &--on &__track { background: #059669; }
+
+  &__thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+  }
+
+  &--on &__thumb { transform: translateX(18px); }
+}
+
 // ── Hours Editor ──────────────────────────────────────────────────────────────
 .hours-editor {
   &__row {
