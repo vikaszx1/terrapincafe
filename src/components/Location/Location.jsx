@@ -1,9 +1,11 @@
+import { useSiteData } from '../../context/SiteDataContext'
 import './Location.scss'
 
 const MAPS_URL = 'https://maps.google.com/?q=Terrapin+Creek+Cafe+Bodega+Bay'
 const MAPS_EMBED = 'https://maps.google.com/maps?q=1580+Eastshore+Rd,+Bodega+Bay,+CA+94923&t=&z=15&ie=UTF8&iwloc=&output=embed'
 
 export default function Location() {
+  const { hours } = useSiteData()
   return (
     <section id="location" className="location">
       <div className="location__container">
@@ -46,9 +48,12 @@ export default function Location() {
                 <div className="location__item-content">
                   <span className="location__item-title">Hours</span>
                   <div className="location__hours">
-                    <span>Tuesday – Friday</span>  <span>5:00 – 9:00 PM</span>
-                    <span>Saturday – Sunday</span> <span>4:30 – 9:30 PM</span>
-                    <span>Monday</span>             <span>Closed</span>
+                    {hours.map(h => (
+                      <>
+                        <span key={h.id + '-day'}>{h.days}</span>
+                        <span key={h.id + '-time'}>{h.closed ? 'Closed' : h.time}</span>
+                      </>
+                    ))}
                   </div>
                 </div>
               </li>

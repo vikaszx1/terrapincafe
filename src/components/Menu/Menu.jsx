@@ -1,10 +1,19 @@
 import { useState } from 'react'
-import { menuCategories, menuItems, tagLabels } from '../../data/menuData'
+import { menuCategories, tagLabels } from '../../data/menuData'
+import { useSiteData } from '../../context/SiteDataContext'
 import './Menu.scss'
 
-function MenuCard({ name, price, desc, tags }) {
+function MenuCard({ name, price, desc, tags, image }) {
   return (
     <article className="menu-card">
+      {image && (
+        <img
+          src={image}
+          alt={name}
+          className="menu-card__img"
+          onError={e => { e.target.style.display = 'none' }}
+        />
+      )}
       <div className="menu-card__header">
         <span className="menu-card__name">{name}</span>
         <span className="menu-card__price">{price}</span>
@@ -25,6 +34,7 @@ function MenuCard({ name, price, desc, tags }) {
 
 export default function Menu() {
   const [active, setActive] = useState('starters')
+  const { menu: menuItems } = useSiteData()
 
   return (
     <section id="menu" className="menu">
