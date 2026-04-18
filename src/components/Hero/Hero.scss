@@ -54,8 +54,10 @@
   }
 
   &__content {
+    // No z-index — that would create a stacking context and trap
+    // mix-blend-mode inside it, breaking the per-pixel color inversion.
+    // position: relative is enough to sit above the absolute bg/wave layers.
     position: relative;
-    z-index: 2;
     text-align: center;
     padding: 0 1.5rem;
     animation: fadeUp 1.2s ease both;
@@ -114,14 +116,15 @@
     animation: fadeUp 1.2s 0.4s ease both;
 
     // ── Dynamic color blending ──────────────────────────
-    // mix-blend-mode: difference makes colors invert based on
-    // whatever background is behind — white on dark = stays visible,
-    // white on light/cream = flips to dark automatically.
-    isolation: isolate;
+    // NO isolation: isolate here — without it, mix-blend-mode
+    // blends against the ACTUAL rendered background (hero gradient
+    // + cream wave) per pixel. white on dark blue → warm light,
+    // white on cream/white → near-black. Both halves of a split
+    // button are handled automatically by the GPU.
 
     .btn-primary {
       background: #fff;
-      color: $deep-blue;
+      color: #fff;
       border: none;
       mix-blend-mode: difference;
 
@@ -134,11 +137,11 @@
     .btn-outline {
       background: transparent;
       color: #fff;
-      border: 1px solid #fff;
+      border: 1.5px solid #fff;
       mix-blend-mode: difference;
 
       &:hover {
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.2);
       }
     }
   }
