@@ -24,8 +24,6 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  // Push flex centering above the 200px wave so buttons never land on white
-  padding-bottom: 200px;
 
   &__bg {
     position: absolute;
@@ -114,6 +112,35 @@
     justify-content: center;
     flex-wrap: wrap;
     animation: fadeUp 1.2s 0.4s ease both;
+
+    // ── Dynamic color blending ──────────────────────────
+    // mix-blend-mode: difference makes colors invert based on
+    // whatever background is behind — white on dark = stays visible,
+    // white on light/cream = flips to dark automatically.
+    isolation: isolate;
+
+    .btn-primary {
+      background: #fff;
+      color: $deep-blue;
+      border: none;
+      mix-blend-mode: difference;
+
+      &:hover {
+        background: #fff;
+        transform: translateY(-1px);
+      }
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: #fff;
+      border: 1px solid #fff;
+      mix-blend-mode: difference;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.15);
+      }
+    }
   }
 }
 
