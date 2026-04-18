@@ -1,7 +1,7 @@
 import './Location.scss'
 
 const MAPS_URL = 'https://maps.google.com/?q=Terrapin+Creek+Cafe+Bodega+Bay'
-const MAPS_EMBED = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3132.0!2d-123.0567!3d38.3324!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808450c65cc1e7d9%3A0xc7a3c5d5a4b2e1f0!2sTerrapin%20Creek%20Cafe!5e0!3m2!1sen!2sus!4v1700000000000!5m2!1sen!2sus'
+const MAPS_EMBED = 'https://maps.google.com/maps?q=1580+Eastshore+Rd,+Bodega+Bay,+CA+94923&t=&z=15&ie=UTF8&iwloc=&output=embed'
 
 export default function Location() {
   return (
