@@ -127,19 +127,14 @@
       }
     }
 
-    // ── Explore the Menu: dynamic text color ─────────────
-    // mix-blend-mode: difference on the outline button only —
-    // white text/border on dark blue → stays light (visible),
-    // white text/border on cream wave → inverts to near-black (visible).
-    // No isolation anywhere so the blend sees the real background.
     .btn-outline {
-      background: transparent;
-      color: #fff;
-      border: 1.5px solid #fff;
-      mix-blend-mode: difference;
+      background: rgba($foam, 0.15);
+      color: $deep-blue;
+      border: 1.5px solid $deep-blue;
 
       &:hover {
-        background: rgba(255, 255, 255, 0.2);
+        background: rgba($foam, 0.35);
+        border-color: $deep-blue;
       }
     }
   }
