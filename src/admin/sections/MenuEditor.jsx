@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useSiteData } from '../../context/SiteDataContext'
 import { menuCategories, tagLabels } from '../../data/menuData'
+import ImageUpload from '../components/ImageUpload'
 
 const BLANK_ITEM = { name: '', price: '', desc: '', tags: [], image: '', id: '' }
 const ALL_TAGS = ['gf', 'vg', 'v', 'sig']
@@ -48,21 +49,13 @@ function ItemModal({ item, onSave, onClose }) {
             </div>
           </div>
 
-          <div className="form-row form-row--full" style={{ marginBottom: '1rem' }}>
-            <div className="form-field">
-              <label>Image URL (optional)</label>
-              <input value={form.image || ''} onChange={e => set('image', e.target.value)} placeholder="https://... or /images/dish.jpg" />
-            </div>
-          </div>
-
-          {form.image && (
-            <img
-              src={form.image}
-              alt="preview"
-              style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 6, marginBottom: '1rem', border: '1px solid #e2e8f0' }}
-              onError={e => { e.target.style.display = 'none' }}
+          <div style={{ marginBottom: '1rem' }}>
+            <ImageUpload
+              label="Item Image (optional)"
+              value={form.image || ''}
+              onChange={v => set('image', v)}
             />
-          )}
+          </div>
 
           <div className="form-field">
             <label>Dietary Tags</label>

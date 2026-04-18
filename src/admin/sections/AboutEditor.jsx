@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useSiteData } from '../../context/SiteDataContext'
+import ImageUpload from '../components/ImageUpload'
 
 export default function AboutEditor({ onSave }) {
   const { about, setAbout } = useSiteData()
@@ -16,24 +17,12 @@ export default function AboutEditor({ onSave }) {
     <div>
       <div className="admin-card">
         <div className="admin-card__title">About Image</div>
-        <div className="about-editor">
-          {form.image && (
-            <img
-              src={form.image}
-              alt="About preview"
-              className="about-editor__preview"
-              onError={e => { e.target.style.display = 'none' }}
-            />
-          )}
-          <div className="form-field">
-            <label>Image URL or path</label>
-            <input
-              value={form.image || ''}
-              onChange={e => set('image', e.target.value)}
-              placeholder="https://... or /images/about_us_img.jpg"
-            />
-          </div>
-        </div>
+        <ImageUpload
+          label="Chef / Restaurant Photo"
+          value={form.image || ''}
+          onChange={v => set('image', v)}
+          previewStyle={{ width: 200, height: 150, objectFit: 'cover', borderRadius: 6 }}
+        />
       </div>
 
       <div className="admin-card">
