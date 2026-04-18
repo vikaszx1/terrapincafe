@@ -128,35 +128,14 @@
     }
 
     .btn-outline {
-      background: rgba($foam, 0.15);
-      color: $deep-blue;
-      border: 1.5px solid $deep-blue;
+      background: $deep-blue;
+      color: $foam;
+      border: 1px solid rgba(200, 221, 232, 0.35);
+      letter-spacing: 0.12em;
 
       &:hover {
-        background: rgba($foam, 0.35);
-        border-color: $deep-blue;
-      }
-
-      @media (max-width: 1024px) {
-        color: #fff;
-        border-color: rgba(255, 255, 255, 0.6);
-        background: rgba(255, 255, 255, 0.08);
-
-        &:hover {
-          border-color: #fff;
-          background: rgba(255, 255, 255, 0.15);
-        }
-      }
-
-      @media (max-width: 380px) {
-        color: $deep-blue;
-        border-color: $deep-blue;
-        background: rgba($foam, 0.15);
-
-        &:hover {
-          background: rgba($foam, 0.35);
-          border-color: $deep-blue;
-        }
+        background: lighten($deep-blue, 6%);
+        border-color: rgba(200, 221, 232, 0.65);
       }
     }
   }
