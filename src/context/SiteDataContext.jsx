@@ -1,5 +1,6 @@
-import { createContext, useContext, useState } from 'react'
-import { menuItems as defaultMenu, menuCategories as defaultCategories } from '../data/menuData'
+import { createContext, useContext, useState, useEffect } from 'react'
+import { supabase } from '../lib/supabase'
+import { menuItems as defaultMenuItems, menuCategories as defaultCategories } from '../data/menuData'
 
 // ── Defaults ──────────────────────────────────────────────────────────────────
 export const DEFAULT_RES_CONFIG = {
@@ -7,7 +8,7 @@ export const DEFAULT_RES_CONFIG = {
   maxSeatsPerSlot: 20,
   maxPartySize: 8,
   advanceBookingDays: 30,
-  closedDays: [1], // 0=Sun … 6=Sat  (1=Monday matches default hours)
+  closedDays: [1],
 }
 
 const DEFAULT_HOURS = [
@@ -30,77 +31,287 @@ export const DEFAULT_TAGS = [
   { id: 'sig', shortLabel: 'Signature', fullLabel: 'Signature',    bg: '#e8f0f4', color: '#2c4a5e' },
 ]
 
-const seedMenu = () => {
+// ── DB ↔ App format helpers ───────────────────────────────────────────────────
+function dbRowsToMenu(rows) {
   const out = {}
-  Object.entries(defaultMenu).forEach(([cat, items]) => {
-    out[cat] = items.map(item => ({ ...item, image: item.image ?? null, id: crypto.randomUUID() }))
+  ;(rows || []).forEach((r, idx) => {
+    if (!out[r.category_id]) out[r.category_id] = []
+    out[r.category_id].push({
+      id: r.id, name: r.name, price: r.price,
+      desc: r.description || '', tags: r.tags || [], image: r.image || null,
+    })
   })
   return out
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-const load = (key, fallback) => {
-  try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : fallback }
-  catch { return fallback }
+function menuToDbRows(menu) {
+  const rows = []
+  Object.entries(menu).forEach(([categoryId, items]) => {
+    ;(items || []).forEach((item, idx) => {
+      rows.push({
+        id: item.id,
+        category_id: categoryId,
+        name: item.name,
+        price: item.price,
+        description: item.desc || '',
+        tags: item.tags || [],
+        image: item.image || null,
+        sort_order: idx,
+      })
+    })
+  })
+  return rows
 }
-const save = (key, val) => {
-  try {
-    localStorage.setItem(key, JSON.stringify(val))
-  } catch (e) {
-    console.error(`Storage quota exceeded saving "${key}". Image may not persist.`, e)
-  }
+
+function dbRowsToTags(rows) {
+  return (rows || []).map(r => ({
+    id: r.id, shortLabel: r.short_label, fullLabel: r.full_label, bg: r.bg, color: r.color,
+  }))
+}
+
+function tagsToDbRows(tags) {
+  return tags.map((t, i) => ({
+    id: t.id, short_label: t.shortLabel, full_label: t.fullLabel,
+    bg: t.bg, color: t.color, sort_order: i,
+  }))
+}
+
+function dbRowsToBookings(rows) {
+  return (rows || []).map(r => ({
+    id: r.id, date: r.date, slot: r.slot,
+    name: r.name, email: r.email, phone: r.phone || '',
+    partySize: r.party_size, requests: r.requests || '',
+    status: r.status, createdAt: r.created_at,
+  }))
 }
 
 // ── Context ───────────────────────────────────────────────────────────────────
 const SiteDataContext = createContext(null)
 
 export function SiteDataProvider({ children }) {
-  const [menu,             setMenuRaw]             = useState(() => load('tc_menu',          seedMenu()))
-  const [hours,            setHoursRaw]            = useState(() => load('tc_hours',         DEFAULT_HOURS))
-  const [about,            setAboutRaw]            = useState(() => load('tc_about',         DEFAULT_ABOUT))
-  const [tags,             setTagsRaw]             = useState(() => load('tc_tags',          DEFAULT_TAGS))
-  const [categories,       setCategoriesRaw]       = useState(() => load('tc_categories',    defaultCategories))
-  const [resConfig,        setResConfigRaw]        = useState(() => load('tc_res_cfg',       DEFAULT_RES_CONFIG))
-  const [bookings,         setBookingsRaw]         = useState(() => load('tc_bookings',      []))
-  const [hiddenCategories, setHiddenCategoriesRaw] = useState(() => load('tc_hidden_cats',  []))
+  const [loading,          setLoading]          = useState(true)
+  const [menu,             setMenuState]         = useState({})
+  const [hours,            setHoursState]        = useState(DEFAULT_HOURS)
+  const [about,            setAboutState]        = useState(DEFAULT_ABOUT)
+  const [tags,             setTagsState]         = useState(DEFAULT_TAGS)
+  const [categories,       setCategoriesState]   = useState(defaultCategories)
+  const [hiddenCategories, setHiddenCatsState]   = useState([])
+  const [resConfig,        setResConfigState]    = useState(DEFAULT_RES_CONFIG)
+  const [bookings,         setBookingsState]     = useState([])
 
-  const setMenu             = v => { setMenuRaw(v);             save('tc_menu',         v) }
-  const setHours            = v => { setHoursRaw(v);            save('tc_hours',        v) }
-  const setAbout            = v => { setAboutRaw(v);            save('tc_about',        v) }
-  const setTags             = v => { setTagsRaw(v);             save('tc_tags',         v) }
-  const setCategories       = v => { setCategoriesRaw(v);       save('tc_categories',   v) }
-  const setResConfig        = v => { setResConfigRaw(v);        save('tc_res_cfg',      v) }
-  const setBookings         = v => { setBookingsRaw(v);         save('tc_bookings',     v) }
-  const setHiddenCategories = v => { setHiddenCategoriesRaw(v); save('tc_hidden_cats',  v) }
+  // ── Initial load ────────────────────────────────────────────────────────────
+  useEffect(() => {
+    async function loadAll() {
+      try {
+        const [
+          { data: catRows,     error: catErr     },
+          { data: itemRows,    error: itemErr     },
+          { data: tagRows,     error: tagErr      },
+          { data: configRows,  error: cfgErr      },
+          { data: bookingRows, error: bookingErr  },
+        ] = await Promise.all([
+          supabase.from('menu_categories').select('*').order('sort_order'),
+          supabase.from('menu_items').select('*').order('category_id').order('sort_order'),
+          supabase.from('dietary_tags').select('*').order('sort_order'),
+          supabase.from('site_config').select('*'),
+          supabase.from('bookings').select('*').order('date').order('created_at'),
+        ])
 
-  function addBooking(booking) {
-    const next = [...bookings, { ...booking, id: crypto.randomUUID(), createdAt: new Date().toISOString(), status: 'confirmed' }]
-    setBookings(next)
-    return next[next.length - 1]
+        if (catErr || itemErr || tagErr || cfgErr || bookingErr) {
+          console.error('Supabase load errors:', { catErr, itemErr, tagErr, cfgErr, bookingErr })
+        }
+
+        // ── Categories & hidden ──
+        if (catRows?.length) {
+          setCategoriesState(catRows.map(r => ({ id: r.id, label: r.label })))
+          setHiddenCatsState(catRows.filter(r => r.hidden).map(r => r.id))
+        } else {
+          await seedDefaults()
+          return
+        }
+
+        // ── Menu items ──
+        if (itemRows?.length) setMenuState(dbRowsToMenu(itemRows))
+
+        // ── Tags ──
+        if (tagRows?.length) setTagsState(dbRowsToTags(tagRows))
+
+        // ── Site config ──
+        if (configRows?.length) {
+          const cfg = Object.fromEntries(configRows.map(r => [r.key, r.value]))
+          if (cfg.hours)      setHoursState(cfg.hours)
+          if (cfg.about)      setAboutState(cfg.about)
+          if (cfg.res_config) setResConfigState(cfg.res_config)
+        }
+
+        // ── Bookings ──
+        if (bookingRows?.length) setBookingsState(dbRowsToBookings(bookingRows))
+
+      } catch (err) {
+        console.error('Failed to load from Supabase:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadAll()
+  }, [])
+
+  // ── Seed DB on first run ─────────────────────────────────────────────────────
+  async function seedDefaults() {
+    try {
+      // Categories
+      await supabase.from('menu_categories').insert(
+        defaultCategories.map((c, i) => ({ id: c.id, label: c.label, sort_order: i, hidden: false }))
+      )
+      setCategoriesState(defaultCategories)
+      setHiddenCatsState([])
+
+      // Tags
+      await supabase.from('dietary_tags').insert(tagsToDbRows(DEFAULT_TAGS))
+      setTagsState(DEFAULT_TAGS)
+
+      // Menu items — seed with UUIDs
+      const seeded = {}
+      Object.entries(defaultMenuItems).forEach(([cat, items]) => {
+        seeded[cat] = items.map(item => ({ ...item, id: crypto.randomUUID(), image: item.image ?? null }))
+      })
+      const rows = menuToDbRows(seeded)
+      if (rows.length) await supabase.from('menu_items').insert(rows)
+      setMenuState(seeded)
+
+      // Config
+      await supabase.from('site_config').insert([
+        { key: 'hours',      value: DEFAULT_HOURS      },
+        { key: 'about',      value: DEFAULT_ABOUT      },
+        { key: 'res_config', value: DEFAULT_RES_CONFIG },
+      ])
+    } catch (err) {
+      console.error('Seed failed:', err)
+    } finally {
+      setLoading(false)
+    }
   }
 
-  function cancelBooking(id) {
-    setBookings(bookings.map(b => b.id === id ? { ...b, status: 'cancelled' } : b))
+  // ── Setters ──────────────────────────────────────────────────────────────────
+  async function setMenu(newMenu) {
+    setMenuState(newMenu)
+    const rows = menuToDbRows(newMenu)
+    // Clear and replace (simple, correct for small menus)
+    await supabase.from('menu_items').delete().gte('sort_order', 0)
+    if (rows.length) await supabase.from('menu_items').insert(rows)
   }
 
-  function restoreBooking(id) {
-    setBookings(bookings.map(b => b.id === id ? { ...b, status: 'confirmed' } : b))
+  async function setHours(newHours) {
+    setHoursState(newHours)
+    await supabase.from('site_config').upsert({ key: 'hours', value: newHours })
   }
 
-  // Returns seats already booked for a specific date + slot
+  async function setAbout(newAbout) {
+    setAboutState(newAbout)
+    await supabase.from('site_config').upsert({ key: 'about', value: newAbout })
+  }
+
+  async function setTags(newTags) {
+    setTagsState(newTags)
+    const rows = tagsToDbRows(newTags)
+    const keepIds = newTags.map(t => t.id)
+    // Delete removed tags, upsert existing/new
+    await supabase.from('dietary_tags').delete().not('id', 'in', `(${keepIds.map(id => `"${id}"`).join(',')})`)
+    if (rows.length) await supabase.from('dietary_tags').upsert(rows)
+  }
+
+  async function setCategories(newCats) {
+    setCategoriesState(newCats)
+    const keepIds = newCats.map(c => c.id)
+    // Delete removed categories (cascade deletes their items)
+    await supabase.from('menu_categories').delete().not('id', 'in', `(${keepIds.map(id => `"${id}"`).join(',')})`)
+    // Upsert all
+    if (newCats.length) {
+      await supabase.from('menu_categories').upsert(
+        newCats.map((c, i) => ({
+          id: c.id, label: c.label, sort_order: i,
+          hidden: hiddenCategories.includes(c.id),
+        }))
+      )
+    }
+  }
+
+  async function setHiddenCategories(hiddenIds) {
+    setHiddenCatsState(hiddenIds)
+    // Update hidden flag for all categories
+    const updates = categories.map(c => ({
+      id: c.id, label: c.label,
+      hidden: hiddenIds.includes(c.id),
+    }))
+    if (updates.length) await supabase.from('menu_categories').upsert(updates)
+  }
+
+  async function setResConfig(newConfig) {
+    setResConfigState(newConfig)
+    await supabase.from('site_config').upsert({ key: 'res_config', value: newConfig })
+  }
+
+  // ── Booking helpers ──────────────────────────────────────────────────────────
+  async function addBooking(booking) {
+    const row = {
+      date: booking.date, slot: booking.slot,
+      name: booking.name, email: booking.email,
+      phone: booking.phone || '', party_size: booking.partySize,
+      requests: booking.requests || '', status: 'confirmed',
+    }
+    const { data, error } = await supabase.from('bookings').insert(row).select().single()
+    if (error) { console.error('addBooking failed:', error); return null }
+    const saved = { ...booking, id: data.id, createdAt: data.created_at, status: 'confirmed' }
+    setBookingsState(prev => [...prev, saved])
+    return saved
+  }
+
+  async function cancelBooking(id) {
+    setBookingsState(prev => prev.map(b => b.id === id ? { ...b, status: 'cancelled' } : b))
+    await supabase.from('bookings').update({ status: 'cancelled' }).eq('id', id)
+  }
+
+  async function restoreBooking(id) {
+    setBookingsState(prev => prev.map(b => b.id === id ? { ...b, status: 'confirmed' } : b))
+    await supabase.from('bookings').update({ status: 'confirmed' }).eq('id', id)
+  }
+
   function bookedSeats(date, slot) {
     return bookings
       .filter(b => b.date === date && b.slot === slot && b.status === 'confirmed')
       .reduce((sum, b) => sum + b.partySize, 0)
   }
 
-  const resetToDefaults = () => {
-    setMenu(seedMenu()); setHours(DEFAULT_HOURS)
-    setAbout(DEFAULT_ABOUT); setTags(DEFAULT_TAGS)
-    setCategories(defaultCategories)
-    setResConfig(DEFAULT_RES_CONFIG)
-    setHiddenCategories([])
-    // bookings intentionally not reset
+  // ── Reset to defaults ────────────────────────────────────────────────────────
+  async function resetToDefaults() {
+    setLoading(true)
+    await Promise.all([
+      supabase.from('menu_items').delete().gte('sort_order', 0),
+      supabase.from('menu_categories').delete().neq('id', ''),
+      supabase.from('dietary_tags').delete().neq('id', ''),
+      supabase.from('site_config').delete().neq('key', ''),
+    ])
+    await seedDefaults()
+  }
+
+  // ── Loading screen ───────────────────────────────────────────────────────────
+  if (loading) {
+    return (
+      <div style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        justifyContent: 'center', height: '100vh', gap: '1rem',
+        fontFamily: 'system-ui, sans-serif', color: '#64748b',
+      }}>
+        <div style={{
+          width: 36, height: 36, border: '3px solid #e2e8f0',
+          borderTopColor: '#2c4a5e', borderRadius: '50%',
+          animation: 'spin 0.8s linear infinite',
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+        <span style={{ fontSize: '0.85rem', letterSpacing: '0.05em' }}>Loading…</span>
+      </div>
+    )
   }
 
   return (
@@ -110,9 +321,9 @@ export function SiteDataProvider({ children }) {
       about, setAbout,
       tags, setTags,
       categories, setCategories,
-      resConfig, setResConfig,
-      bookings, setBookings, addBooking, cancelBooking, restoreBooking, bookedSeats,
       hiddenCategories, setHiddenCategories,
+      resConfig, setResConfig,
+      bookings, addBooking, cancelBooking, restoreBooking, bookedSeats,
       resetToDefaults,
     }}>
       {children}

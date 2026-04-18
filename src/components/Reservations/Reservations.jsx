@@ -267,9 +267,10 @@ export default function Reservations() {
     setStep(2)
   }
 
-  function handleDetails(details) {
+  async function handleDetails(details) {
     const full = { ...booking, ...details }
-    const saved = addBooking(full)
+    const saved = await addBooking(full)
+    if (!saved) return // DB error — stay on step 2
     setConfirmed(saved)
     setStep(3)
   }

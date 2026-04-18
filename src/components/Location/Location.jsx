@@ -1,3 +1,4 @@
+import React from 'react'
 import { useSiteData } from '../../context/SiteDataContext'
 import './Location.scss'
 
@@ -49,10 +50,10 @@ export default function Location() {
                   <span className="location__item-title">Hours</span>
                   <div className="location__hours">
                     {hours.map(h => (
-                      <>
-                        <span key={h.id + '-day'}>{h.days}</span>
-                        <span key={h.id + '-time'}>{h.closed ? 'Closed' : h.time}</span>
-                      </>
+                      <React.Fragment key={h.id}>
+                        <span>{h.days}</span>
+                        <span>{h.closed ? 'Closed' : h.time}</span>
+                      </React.Fragment>
                     ))}
                   </div>
                 </div>
