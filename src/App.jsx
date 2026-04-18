@@ -10,15 +10,26 @@ import StickyReserve from './components/StickyReserve/StickyReserve'
 import './styles/global.scss'
 
 export default function App() {
-  // Scroll-reveal observer — runs once after mount
+  // Scroll-reveal observer
   useEffect(() => {
-    const els = document.querySelectorAll('.reveal')
-    const observer = new IntersectionObserver(
-      entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible') }),
-      { threshold: 0.12 }
-    )
-    els.forEach(el => observer.observe(el))
-    return () => observer.disconnect()
+    const observe = () => {
+      const els = document.querySelectorAll('.reveal:not(.visible)')
+      const observer = new IntersectionObserver(
+        entries => entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible')
+            observer.unobserve(e.target)
+          }
+        }),
+        { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
+      )
+      els.forEach(el => observer.observe(el))
+      return observer
+    }
+
+    // Small delay so React StrictMode double-invoke settles
+    const timer = setTimeout(() => { observe() }, 50)
+    return () => clearTimeout(timer)
   }, [])
 
   return (
