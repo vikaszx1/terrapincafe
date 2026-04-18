@@ -133,6 +133,187 @@
   }
 }
 
+// ── Steps indicator ───────────────────────────────────
+.res-steps {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 2.5rem;
+
+  &__step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    flex: 1;
+    max-width: 140px;
+    position: relative;
+    color: rgba(255,255,255,0.35);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: calc(-50% + 14px);
+      right: calc(50% + 14px);
+      height: 1px;
+      background: rgba(255,255,255,0.15);
+    }
+
+    &:first-child::before { display: none; }
+
+    &.done {
+      color: $sky;
+      &::before { background: $sky; }
+    }
+
+    &.active {
+      color: #fff;
+    }
+  }
+
+  &__dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    background: transparent;
+    transition: all 0.2s;
+
+    .done & { background: $sky; border-color: $sky; color: $deep-blue; }
+    .active & { border-color: #fff; color: #fff; }
+  }
+
+  @include respond-to(sm) {
+    span { display: none; }
+    gap: 0;
+    max-width: 100%;
+  }
+}
+
+// ── Step panel ─────────────────────────────────────────
+.res-step-panel {
+  max-width: 680px;
+  margin: 0 auto;
+
+  &__hint {
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 1.25rem;
+    text-align: center;
+
+    strong { color: rgba(255,255,255,0.85); }
+  }
+}
+
+.res-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+
+  @include respond-to(sm) { grid-template-columns: 1fr; }
+}
+
+.res-error {
+  font-size: 0.8rem;
+  color: rgba(255,160,160,0.9);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.res-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  gap: 1rem;
+}
+
+// ── Slot grid ──────────────────────────────────────────
+.res-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.res-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.85rem 0.5rem;
+  border-radius: 6px;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.05);
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s;
+  gap: 0.25rem;
+
+  &:hover:not(:disabled) {
+    border-color: rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.1);
+  }
+
+  &--selected {
+    border-color: $sky !important;
+    background: rgba(74,122,150,0.2) !important;
+  }
+
+  &--full {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  &--few .res-slot__avail { color: #fbbf24; }
+
+  &__time {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  &__avail {
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+  }
+
+  &--selected &__avail { color: $sky; }
+}
+
+// textarea inside public form
+.form-group {
+  textarea {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: #fff;
+    padding: 0.75rem 1rem;
+    font-family: $sans;
+    font-size: 0.88rem;
+    border-radius: 2px;
+    outline: none;
+    resize: vertical;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color $transition-fast;
+
+    &::placeholder { color: rgba(255,255,255,0.35); }
+    &:focus        { border-color: rgba(255,255,255,0.5); }
+  }
+
+  &--full { grid-column: 1 / -1; }
+}
+
 // ── Form Group ────────────────────────────────────────
 .form-group {
   display: flex;

@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { menuCategories, tagLabels } from '../../data/menuData'
+import { menuCategories } from '../../data/menuData'
 import { useSiteData } from '../../context/SiteDataContext'
 import './Menu.scss'
 
-function MenuCard({ name, price, desc, tags, image }) {
+function MenuCard({ name, price, desc, tags, image, allTags }) {
   return (
     <article className="menu-card">
       {image && (
@@ -19,13 +19,16 @@ function MenuCard({ name, price, desc, tags, image }) {
         <span className="menu-card__price">{price}</span>
       </div>
       <p className="menu-card__desc">{desc}</p>
-      {tags.length > 0 && (
+      {tags?.length > 0 && (
         <div className="menu-card__tags">
-          {tags.map(tag => (
-            <span key={tag} className={`tag ${tagLabels[tag].className}`}>
-              {tagLabels[tag].label}
-            </span>
-          ))}
+          {tags.map(tid => {
+            const t = allTags.find(x => x.id === tid)
+            return t ? (
+              <span key={tid} className="tag" style={{ background: t.bg, color: t.color }}>
+                {t.shortLabel}
+              </span>
+            ) : null
+          })}
         </div>
       )}
     </article>
@@ -34,7 +37,7 @@ function MenuCard({ name, price, desc, tags, image }) {
 
 export default function Menu() {
   const [active, setActive] = useState('starters')
-  const { menu: menuItems } = useSiteData()
+  const { menu: menuItems, tags: allTags } = useSiteData()
 
   return (
     <section id="menu" className="menu">
@@ -66,16 +69,20 @@ export default function Menu() {
 
         {/* ── Panel ── */}
         <div className="menu__grid" role="tabpanel">
-          {menuItems[active].map(item => (
-            <MenuCard key={item.name} {...item} />
+          {(menuItems[active] || []).map(item => (
+            <MenuCard key={item.id || item.name} {...item} allTags={allTags} />
           ))}
         </div>
 
-        {/* ── Legend ── */}
+        {/* ── Legend: driven by context tags ── */}
         <div className="menu__legend">
-          <span className="tag tag-gf">GF</span> Gluten-Free &nbsp;
-          <span className="tag tag-vg">VG</span> Vegan &nbsp;
-          <span className="tag tag-v">V</span> Vegetarian
+          {allTags.map(t => (
+            <span key={t.id} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+              <span className="tag" style={{ background: t.bg, color: t.color }}>{t.shortLabel}</span>
+              {t.fullLabel}
+              &nbsp;&nbsp;
+            </span>
+          ))}
         </div>
       </div>
     </section>

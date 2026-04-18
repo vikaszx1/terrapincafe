@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { useSiteData } from '../../context/SiteDataContext'
-import { menuCategories, tagLabels } from '../../data/menuData'
+import { menuCategories } from '../../data/menuData'
 import ImageUpload from '../components/ImageUpload'
+import { useConfirm } from '../components/ConfirmDialog'
 
 const BLANK_ITEM = { name: '', price: '', desc: '', tags: [], image: '', id: '' }
-const ALL_TAGS = ['gf', 'vg', 'v', 'sig']
 
-function ItemModal({ item, onSave, onClose }) {
+function ItemModal({ item, onSave, onClose, allTags }) {
   const [form, setForm] = useState({ ...BLANK_ITEM, ...item })
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
@@ -60,10 +60,13 @@ function ItemModal({ item, onSave, onClose }) {
           <div className="form-field">
             <label>Dietary Tags</label>
             <div className="tag-checks">
-              {ALL_TAGS.map(tag => (
-                <label key={tag}>
-                  <input type="checkbox" checked={form.tags.includes(tag)} onChange={() => toggleTag(tag)} />
-                  {tagLabels[tag].label} ({tag.toUpperCase()})
+              {allTags.map(tag => (
+                <label key={tag.id}>
+                  <input type="checkbox" checked={form.tags.includes(tag.id)} onChange={() => toggleTag(tag.id)} />
+                  <span style={{ background: tag.bg, color: tag.color, padding: '0.1rem 0.45rem', borderRadius: 3, fontSize: '0.7rem', letterSpacing: '0.08em' }}>
+                    {tag.shortLabel}
+                  </span>
+                  {tag.fullLabel}
                 </label>
               ))}
             </div>
@@ -82,9 +85,10 @@ function ItemModal({ item, onSave, onClose }) {
 }
 
 export default function MenuEditor({ onSave }) {
-  const { menu, setMenu } = useSiteData()
+  const { menu, setMenu, tags: allTags } = useSiteData()
   const [activeTab, setActiveTab] = useState('starters')
   const [editing, setEditing]     = useState(null) // null | item object
+  const confirm                   = useConfirm()
 
   function saveItem(item) {
     const items = menu[activeTab] || []
@@ -97,8 +101,9 @@ export default function MenuEditor({ onSave }) {
     onSave()
   }
 
-  function deleteItem(id) {
-    if (!confirm('Delete this menu item?')) return
+  async function deleteItem(id) {
+    const ok = await confirm('Delete this menu item? This action cannot be undone.', { danger: true })
+    if (!ok) return
     setMenu({ ...menu, [activeTab]: menu[activeTab].filter(i => i.id !== id) })
     onSave()
   }
@@ -131,7 +136,12 @@ export default function MenuEditor({ onSave }) {
               <div className="menu-editor__item-desc">{item.desc}</div>
               {item.tags?.length > 0 && (
                 <div className="menu-editor__item-tags">
-                  {item.tags.map(t => <span key={t}>{tagLabels[t]?.label || t}</span>)}
+                  {item.tags.map(tid => {
+                    const t = allTags.find(x => x.id === tid)
+                    return t
+                      ? <span key={tid} style={{ background: t.bg, color: t.color }}>{t.shortLabel}</span>
+                      : <span key={tid}>{tid}</span>
+                  })}
                 </div>
               )}
             </div>
@@ -156,7 +166,7 @@ export default function MenuEditor({ onSave }) {
       </div>
 
       {editing !== null && (
-        <ItemModal item={editing} onSave={saveItem} onClose={() => setEditing(null)} />
+        <ItemModal item={editing} onSave={saveItem} onClose={() => setEditing(null)} allTags={allTags} />
       )}
     </div>
   )

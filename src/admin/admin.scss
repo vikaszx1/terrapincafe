@@ -24,6 +24,18 @@ $sans:         -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: $bg;
   color: $text;
 
+  // Dark overlay behind sidebar on mobile
+  &__overlay {
+    display: none;
+    @media (max-width: 768px) {
+      display: block;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 19;
+    }
+  }
+
   &__sidebar {
     width: $sidebar-w;
     background: $sidebar-bg;
@@ -31,12 +43,14 @@ $sans:         -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     flex-direction: column;
     position: fixed;
     top: 0; left: 0; bottom: 0;
-    z-index: 10;
+    z-index: 20;
+    transition: transform 0.28s ease;
 
+    // Hidden off-screen on mobile by default
     @media (max-width: 768px) {
-      width: 100%;
-      position: relative;
-      height: auto;
+      transform: translateX(-100%);
+      width: min(280px, 85vw);
+      &--open { transform: translateX(0); }
     }
   }
 
@@ -62,17 +76,18 @@ $sans:         -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   &__nav {
     flex: 1;
     padding: 1rem 0;
+    overflow-y: auto;
 
     a, button {
       display: flex;
       align-items: center;
       gap: 0.75rem;
       width: 100%;
-      padding: 0.75rem 1.25rem;
+      padding: 0.85rem 1.25rem;
       background: none;
       border: none;
       color: rgba(255,255,255,0.55);
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       font-family: $sans;
       font-weight: 400;
       text-decoration: none;
@@ -80,11 +95,10 @@ $sans:         -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       transition: color 0.2s, background 0.2s;
       text-align: left;
 
-      .nav-icon { font-size: 1rem; width: 18px; text-align: center; }
+      .nav-icon { font-size: 1.1rem; width: 20px; text-align: center; }
 
-      &:hover    { color: #fff; background: rgba(255,255,255,0.06); }
-      &.active   { color: #fff; background: rgba(74,122,150,0.35);
-                   border-left: 3px solid $accent-light; }
+      &:hover  { color: #fff; background: rgba(255,255,255,0.06); }
+      &.active { color: #fff; background: rgba(74,122,150,0.35); border-left: 3px solid $accent-light; }
     }
   }
 
@@ -109,14 +123,36 @@ $sans:         -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    min-width: 0;
 
     @media (max-width: 768px) { margin-left: 0; }
+  }
+
+  // ── Hamburger button (visible on mobile only) ───────────
+  &__hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+
+    span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: $text;
+      border-radius: 2px;
+    }
+
+    @media (max-width: 768px) { display: flex; }
   }
 
   &__topbar {
     background: $white;
     border-bottom: 1px solid $border;
-    padding: 0 2rem;
+    padding: 0 1.5rem;
     height: 60px;
     display: flex;
     align-items: center;
@@ -129,12 +165,14 @@ $sans:         -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       font-size: 1rem;
       font-weight: 600;
       color: $text;
+      @media (max-width: 480px) { font-size: 0.9rem; }
     }
   }
 
   &__content {
     padding: 2rem;
     flex: 1;
+    @media (max-width: 768px) { padding: 1rem; }
   }
 }
 
@@ -575,6 +613,74 @@ $sans:         -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     padding-top: 1rem;
     border-top: 1px dashed $border;
   }
+
+  // On mobile stack item card vertically
+  @media (max-width: 560px) {
+    &__item {
+      flex-wrap: wrap;
+      &-img    { width: 48px; height: 48px; }
+      &-actions { width: 100%; justify-content: flex-end; }
+    }
+  }
+}
+
+// ── Tags Editor ───────────────────────────────────────────────────────────────
+.tags-editor {
+  &__list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.875rem 1rem;
+    background: $white;
+    border: 1px solid $border;
+    border-radius: 8px;
+
+    @media (max-width: 560px) {
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+  }
+
+  &__badge {
+    display: inline-block;
+    padding: 0.25rem 0.65rem;
+    border-radius: 3px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    min-width: 44px;
+    text-align: center;
+  }
+
+  &__meta {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+  }
+
+  &__full {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: $text;
+  }
+
+  &__id {
+    font-size: 0.72rem;
+    color: $muted;
+    code { font-family: monospace; background: $bg; padding: 0.1rem 0.3rem; border-radius: 3px; }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.4rem;
+    flex-shrink: 0;
+  }
 }
 
 // ── Modal ─────────────────────────────────────────────────────────────────────
@@ -632,6 +738,19 @@ $sans:         -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     position: sticky;
     bottom: 0;
     background: $white;
+  }
+}
+
+@media (max-width: 560px) {
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal {
+    border-radius: 12px 12px 0 0;
+    max-height: 95vh;
+    max-width: 100%;
   }
 }
 
@@ -695,6 +814,15 @@ $sans:         -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
       input[type='checkbox'] { accent-color: $danger; cursor: pointer; }
     }
+
+    @media (max-width: 560px) {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+
+      label { grid-column: 1 / -1; font-size: 0.78rem; }
+      input { grid-column: 1; }
+      .closed-toggle { grid-column: 2; justify-self: end; }
+    }
   }
 }
 
@@ -713,6 +841,327 @@ $sans:         -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: $bg;
   }
 }
+
+// ── Reservations Admin ────────────────────────────────────────────────────────
+.res-settings {
+  &__slots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  &__slot-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: $bg;
+    border: 1px solid $border;
+    border-radius: 20px;
+    padding: 0.3rem 0.65rem 0.3rem 0.9rem;
+    font-size: 0.8rem;
+    color: $text;
+
+    button {
+      background: none;
+      border: none;
+      font-size: 0.75rem;
+      color: $muted;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+      &:hover { color: $danger; }
+    }
+  }
+
+  &__add-slot {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+
+    input {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid $border;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-family: $sans;
+      outline: none;
+      width: 140px;
+      &:focus { border-color: $accent; }
+    }
+  }
+
+  &__closed-days {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.9rem;
+      border: 1.5px solid $border;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: $muted;
+      cursor: pointer;
+      transition: all 0.15s;
+
+      &:hover { border-color: $accent; color: $text; }
+
+      &.active {
+        background: #fee2e2;
+        border-color: $danger;
+        color: $danger;
+      }
+
+      input[type='checkbox'] { display: none; }
+    }
+  }
+}
+
+// Stats bar
+.res-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 600px) { grid-template-columns: repeat(2, 1fr); }
+
+  &__card {
+    background: $bg;
+    border: 1px solid $border;
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  &__num {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: $text;
+    line-height: 1;
+  }
+
+  &__label {
+    font-size: 0.7rem;
+    color: $muted;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+}
+
+// Filters
+.res-filters {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+
+  &__tabs {
+    display: flex;
+    gap: 0.25rem;
+
+    button {
+      padding: 0.4rem 0.9rem;
+      border: 1px solid $border;
+      border-radius: 20px;
+      background: none;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: $muted;
+      cursor: pointer;
+      transition: all 0.15s;
+
+      &:hover { border-color: $accent; color: $text; }
+      &.active { background: $accent; border-color: $accent; color: #fff; }
+    }
+  }
+}
+
+// Bookings list
+.res-bookings {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.res-booking {
+  border: 1px solid $border;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.15s;
+
+  &:hover { border-color: #cbd5e1; }
+
+  &--cancelled {
+    opacity: 0.6;
+    border-style: dashed;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.875rem 1rem;
+    cursor: pointer;
+    background: $white;
+    gap: 1rem;
+
+    &:hover { background: $bg; }
+  }
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  &__date {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: $text;
+    white-space: nowrap;
+  }
+
+  &__slot {
+    font-size: 0.78rem;
+    color: $accent;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  &__party {
+    font-size: 0.75rem;
+    color: $muted;
+    white-space: nowrap;
+  }
+
+  &__name {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: $text;
+  }
+
+  &__toggle {
+    font-size: 0.65rem;
+    color: $muted;
+  }
+
+  &__detail {
+    border-top: 1px solid $border;
+    padding: 1rem;
+    background: $bg;
+  }
+
+  &__detail-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.4rem 1rem;
+    font-size: 0.8rem;
+    margin-bottom: 0.875rem;
+
+    & > span:nth-child(odd) {
+      color: $muted;
+      font-weight: 600;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    & > span:nth-child(even) { color: $text; }
+  }
+
+  &__detail-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
+// ── Confirm Dialog ────────────────────────────────────────────────────────────
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  padding: 1rem;
+  animation: fadeIn 0.15s ease;
+}
+
+.confirm-dialog {
+  background: $white;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem 1.75rem 1.5rem;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.28);
+  text-align: center;
+  animation: scaleIn 0.18s ease;
+
+  &__icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #fef3c7;
+    color: #b45309;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    font-weight: 700;
+  }
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: $text;
+    margin-bottom: 0.5rem;
+  }
+
+  &__message {
+    font-size: 0.85rem;
+    color: $muted;
+    line-height: 1.55;
+    margin-bottom: 1.75rem;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+
+    .btn { min-width: 100px; }
+  }
+
+  @media (max-width: 420px) {
+    padding: 1.5rem 1.25rem 1.25rem;
+    &__actions { flex-direction: column-reverse; .btn { width: 100%; } }
+  }
+}
+
+@keyframes fadeIn  { from { opacity: 0; }                        to { opacity: 1; } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
 
 // ── Toast ─────────────────────────────────────────────────────────────────────
 .toast {

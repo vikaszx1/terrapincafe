@@ -1,7 +1,15 @@
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState } from 'react'
 import { menuItems as defaultMenu } from '../data/menuData'
 
 // ── Defaults ──────────────────────────────────────────────────────────────────
+export const DEFAULT_RES_CONFIG = {
+  slots: ['5:00 PM', '5:30 PM', '6:00 PM', '6:30 PM', '7:00 PM', '7:30 PM', '8:00 PM', '8:30 PM'],
+  maxSeatsPerSlot: 20,
+  maxPartySize: 8,
+  advanceBookingDays: 30,
+  closedDays: [1], // 0=Sun … 6=Sat  (1=Monday matches default hours)
+}
+
 const DEFAULT_HOURS = [
   { id: 1, days: 'Tuesday – Friday',  time: '5:00 – 9:00 PM',  closed: false },
   { id: 2, days: 'Saturday – Sunday', time: '4:30 – 9:30 PM',  closed: false },
@@ -15,7 +23,13 @@ const DEFAULT_ABOUT = {
   image: '/images/about_us_img.jpg',
 }
 
-// Add image:null to each default menu item
+export const DEFAULT_TAGS = [
+  { id: 'gf',  shortLabel: 'GF',        fullLabel: 'Gluten-Free',  bg: '#e8f0f4', color: '#2c4a5e' },
+  { id: 'vg',  shortLabel: 'VG',        fullLabel: 'Vegan',        bg: '#e8f4ee', color: '#2a6048' },
+  { id: 'v',   shortLabel: 'V',         fullLabel: 'Vegetarian',   bg: '#f0ece8', color: '#6a4828' },
+  { id: 'sig', shortLabel: 'Signature', fullLabel: 'Signature',    bg: '#e8f0f4', color: '#2c4a5e' },
+]
+
 const seedMenu = () => {
   const out = {}
   Object.entries(defaultMenu).forEach(([cat, items]) => {
@@ -26,34 +40,67 @@ const seedMenu = () => {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const load = (key, fallback) => {
-  try {
-    const raw = localStorage.getItem(key)
-    return raw ? JSON.parse(raw) : fallback
-  } catch { return fallback }
+  try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : fallback }
+  catch { return fallback }
 }
-
 const save = (key, val) => localStorage.setItem(key, JSON.stringify(val))
 
 // ── Context ───────────────────────────────────────────────────────────────────
 const SiteDataContext = createContext(null)
 
 export function SiteDataProvider({ children }) {
-  const [menu,  setMenuRaw]  = useState(() => load('tc_menu',  seedMenu()))
-  const [hours, setHoursRaw] = useState(() => load('tc_hours', DEFAULT_HOURS))
-  const [about, setAboutRaw] = useState(() => load('tc_about', DEFAULT_ABOUT))
+  const [menu,      setMenuRaw]      = useState(() => load('tc_menu',      seedMenu()))
+  const [hours,     setHoursRaw]     = useState(() => load('tc_hours',     DEFAULT_HOURS))
+  const [about,     setAboutRaw]     = useState(() => load('tc_about',     DEFAULT_ABOUT))
+  const [tags,      setTagsRaw]      = useState(() => load('tc_tags',      DEFAULT_TAGS))
+  const [resConfig, setResConfigRaw] = useState(() => load('tc_res_cfg',   DEFAULT_RES_CONFIG))
+  const [bookings,  setBookingsRaw]  = useState(() => load('tc_bookings',  []))
 
-  // Wrap setters to persist automatically
-  const setMenu  = v => { setMenuRaw(v);  save('tc_menu',  v) }
-  const setHours = v => { setHoursRaw(v); save('tc_hours', v) }
-  const setAbout = v => { setAboutRaw(v); save('tc_about', v) }
+  const setMenu      = v => { setMenuRaw(v);      save('tc_menu',     v) }
+  const setHours     = v => { setHoursRaw(v);     save('tc_hours',    v) }
+  const setAbout     = v => { setAboutRaw(v);     save('tc_about',    v) }
+  const setTags      = v => { setTagsRaw(v);      save('tc_tags',     v) }
+  const setResConfig = v => { setResConfigRaw(v); save('tc_res_cfg',  v) }
+  const setBookings  = v => { setBookingsRaw(v);  save('tc_bookings', v) }
+
+  function addBooking(booking) {
+    const next = [...bookings, { ...booking, id: crypto.randomUUID(), createdAt: new Date().toISOString(), status: 'confirmed' }]
+    setBookings(next)
+    return next[next.length - 1]
+  }
+
+  function cancelBooking(id) {
+    setBookings(bookings.map(b => b.id === id ? { ...b, status: 'cancelled' } : b))
+  }
+
+  function restoreBooking(id) {
+    setBookings(bookings.map(b => b.id === id ? { ...b, status: 'confirmed' } : b))
+  }
+
+  // Returns seats already booked for a specific date + slot
+  function bookedSeats(date, slot) {
+    return bookings
+      .filter(b => b.date === date && b.slot === slot && b.status === 'confirmed')
+      .reduce((sum, b) => sum + b.partySize, 0)
+  }
 
   const resetToDefaults = () => {
-    const fresh = seedMenu()
-    setMenu(fresh); setHours(DEFAULT_HOURS); setAbout(DEFAULT_ABOUT)
+    setMenu(seedMenu()); setHours(DEFAULT_HOURS)
+    setAbout(DEFAULT_ABOUT); setTags(DEFAULT_TAGS)
+    setResConfig(DEFAULT_RES_CONFIG)
+    // bookings intentionally not reset
   }
 
   return (
-    <SiteDataContext.Provider value={{ menu, setMenu, hours, setHours, about, setAbout, resetToDefaults }}>
+    <SiteDataContext.Provider value={{
+      menu, setMenu,
+      hours, setHours,
+      about, setAbout,
+      tags, setTags,
+      resConfig, setResConfig,
+      bookings, setBookings, addBooking, cancelBooking, restoreBooking, bookedSeats,
+      resetToDefaults,
+    }}>
       {children}
     </SiteDataContext.Provider>
   )
