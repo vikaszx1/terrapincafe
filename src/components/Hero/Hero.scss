@@ -24,6 +24,8 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  // Push flex centering above the 200px wave so buttons never land on white
+  padding-bottom: 200px;
 
   &__bg {
     position: absolute;
