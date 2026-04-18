@@ -1,0 +1,52 @@
+@use 'variables' as *;
+
+@mixin respond-to($bp) {
+  @if $bp == md { @media (max-width: $bp-md) { @content; } }
+  @else if $bp == sm { @media (max-width: $bp-sm) { @content; } }
+}
+
+@mixin section-padding {
+  padding: 7rem 2.5rem;
+  @include respond-to(sm) { padding: 5rem 1.5rem; }
+}
+
+@mixin container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@mixin btn-base {
+  font-family: $sans;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background $transition-fast, transform $transition-fast, border-color $transition-fast;
+}
+
+@mixin section-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: $tide;
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+}
+
+@mixin section-title {
+  font-family: $serif;
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 300;
+  color: $deep-blue;
+  line-height: 1.1;
+  margin-bottom: 1.25rem;
+
+  em {
+    font-style: italic;
+    color: $tide;
+  }
+}

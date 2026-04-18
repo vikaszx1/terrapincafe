@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terrapin Creek Cafe — Bodega Bay, CA</title>
+<meta name="description" content="Michelin-recognized coastal cuisine in Bodega Bay. Fresh, seasonal ingredients with an ocean view. Reserve your table today.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --deep-blue: #1a2e3e;
+    --ocean: #2c4a5e;
+    --tide: #4a7a96;
+    --sky: #8ab4c8;
+    --foam: #c8dde8;
+    --mist: #e8f0f4;
+    --sand: #f5f0e8;
+    --dune: #d4c4a8;
+    --shore: #b8a888;
+    --cream: #faf8f4;
+    --charcoal: #2a2a28;
+    --stone: #5a5a58;
+    --pebble: #8a8a88;
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--cream);
+    color: var(--charcoal);
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 0 2.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 72px;
+    transition: background 0.4s, backdrop-filter 0.4s;
+  }
+  nav.scrolled {
+    background: rgba(26, 46, 62, 0.92);
+    backdrop-filter: blur(12px);
+  }
+  .nav-logo {
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: #fff;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+  }
+  .nav-logo span { font-style: italic; color: var(--foam); }
+  .nav-links {
+    display: flex; gap: 2.5rem; list-style: none;
+  }
+  .nav-links a {
+    color: rgba(255,255,255,0.82);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: color 0.25s;
+  }
+  .nav-links a:hover { color: #fff; }
+  .nav-reserve {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.5);
+    color: #fff;
+    padding: 0.5rem 1.25rem;
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.25s, border-color 0.25s;
+    border-radius: 2px;
+  }
+  .nav-reserve:hover { background: rgba(255,255,255,0.12); border-color: #fff; }
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+  .hamburger span { display: block; width: 24px; height: 1.5px; background: #fff; transition: 0.3s; }
+
+  /* ── HERO ── */
+  #hero {
+    height: 100vh; min-height: 640px;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(to bottom, rgba(15,30,42,0.55) 0%, rgba(15,30,42,0.3) 50%, rgba(15,30,42,0.65) 100%),
+      linear-gradient(135deg, #1a3a50 0%, #2c5a78 30%, #3a7090 55%, #2a5068 80%, #1a2e3e 100%);
+  }
+  /* Animated waves */
+  .wave-layer {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 200px; overflow: hidden;
+  }
+  .wave {
+    position: absolute; bottom: 0;
+    width: 200%; height: 100%;
+    background: var(--cream);
+    border-radius: 50% 50% 0 0 / 30% 30% 0 0;
+  }
+  .wave-1 { animation: wave1 8s ease-in-out infinite; opacity: 0.15; transform-origin: center bottom; }
+  .wave-2 { animation: wave2 10s ease-in-out infinite; opacity: 0.1; transform-origin: center bottom; }
+  .wave-3 { bottom: -10px; opacity: 1; border-radius: 60% 60% 0 0 / 20% 20% 0 0; }
+  @keyframes wave1 { 0%,100%{transform:translateX(-10%) scaleY(1)} 50%{transform:translateX(0%) scaleY(1.1)} }
+  @keyframes wave2 { 0%,100%{transform:translateX(0%) scaleY(1)} 50%{transform:translateX(-8%) scaleY(0.95)} }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    text-align: center; padding: 0 1.5rem;
+    animation: fadeUp 1.2s ease both;
+  }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:translateY(0); } }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    border: 1px solid rgba(200,221,232,0.45);
+    color: var(--foam);
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 0.4rem 1rem;
+    margin-bottom: 2rem;
+    border-radius: 2px;
+    animation: fadeUp 1.2s 0.1s ease both;
+  }
+  .hero-badge::before { content: '✦'; font-size: 0.6rem; }
+
+  .hero-title {
+    font-family: var(--serif);
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    font-weight: 300;
+    color: #fff;
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.25em;
+    animation: fadeUp 1.2s 0.2s ease both;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--foam);
+    display: block;
+  }
+  .hero-sub {
+    font-family: var(--serif);
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    font-weight: 300;
+    font-style: italic;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 2.5rem;
+    letter-spacing: 0.02em;
+    animation: fadeUp 1.2s 0.3s ease both;
+  }
+  .hero-ctas {
+    display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+    animation: fadeUp 1.2s 0.4s ease both;
+  }
+  .btn-primary {
+    background: var(--foam);
+    color: var(--deep-blue);
+    padding: 0.85rem 2.2rem;
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: none; cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.25s, transform 0.2s;
+    border-radius: 2px;
+  }
+  .btn-primary:hover { background: #fff; transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent;
+    color: #fff;
+    padding: 0.85rem 2.2rem;
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid rgba(255,255,255,0.45);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: border-color 0.25s, background 0.25s;
+    border-radius: 2px;
+  }
+  .btn-outline:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
+
+  /* ── SECTIONS SHARED ── */
+  section { padding: 7rem 2.5rem; }
+  .section-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--tide);
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+  }
+  .section-title {
+    font-family: var(--serif);
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 300;
+    color: var(--deep-blue);
+    line-height: 1.1;
+    margin-bottom: 1.25rem;
+  }
+  .section-title em { font-style: italic; color: var(--tide); }
+  .section-desc {
+    color: var(--stone);
+    font-size: 1rem;
+    line-height: 1.75;
+    max-width: 540px;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+
+  /* ── ABOUT / STORY ── */
+  #about { background: var(--sand); }
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+  }
+  .about-visual {
+    position: relative;
+  }
+  .about-img-frame {
+    width: 100%; aspect-ratio: 4/5;
+    background: linear-gradient(135deg, var(--ocean) 0%, var(--tide) 40%, var(--sky) 100%);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .about-img-frame::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .about-img-text {
+    font-family: var(--serif);
+    font-size: 2.5rem;
+    font-weight: 300;
+    font-style: italic;
+    color: rgba(255,255,255,0.6);
+    text-align: center;
+    position: relative; z-index: 1;
+    padding: 2rem;
+    line-height: 1.3;
+  }
+  .about-accent {
+    position: absolute; top: -20px; right: -20px;
+    width: 120px; height: 120px;
+    border: 1px solid var(--dune);
+    border-radius: 50%;
+    z-index: -1;
+  }
+  .michelin-badge {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    background: var(--deep-blue);
+    color: var(--foam);
+    padding: 0.6rem 1.2rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    margin-bottom: 1.5rem;
+  }
+  .about-stats {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1.5rem; margin-top: 3rem;
+  }
+  .stat {
+    border-top: 1px solid var(--dune);
+    padding-top: 1rem;
+  }
+  .stat-num {
+    font-family: var(--serif);
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: var(--deep-blue);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+  .stat-label { font-size: 0.78rem; color: var(--stone); letter-spacing: 0.05em; }
+
+  /* ── MENU ── */
+  #menu { background: var(--cream); }
+  .menu-header { text-align: center; margin-bottom: 4rem; }
+  .menu-header .section-desc { margin: 0 auto; text-align: center; }
+  .menu-tabs {
+    display: flex; gap: 0; justify-content: center;
+    border-bottom: 1px solid var(--dune);
+    margin-bottom: 3.5rem;
+    flex-wrap: wrap;
+  }
+  .menu-tab {
+    background: none; border: none;
+    padding: 0.75rem 1.75rem;
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--pebble);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.25s, border-color 0.25s;
+  }
+  .menu-tab.active { color: var(--deep-blue); border-bottom-color: var(--ocean); }
+  .menu-tab:hover:not(.active) { color: var(--stone); }
+  .menu-panel { display: none; }
+  .menu-panel.active { display: block; }
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 0;
+  }
+  .menu-item {
+    padding: 1.75rem;
+    border-bottom: 1px solid var(--mist);
+    border-right: 1px solid var(--mist);
+    transition: background 0.2s;
+  }
+  .menu-item:hover { background: var(--sand); }
+  .menu-item-header {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 0.4rem;
+  }
+  .menu-item-name {
+    font-family: var(--serif);
+    font-size: 1.15rem;
+    font-weight: 400;
+    color: var(--deep-blue);
+  }
+  .menu-item-price {
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    font-weight: 300;
+    color: var(--tide);
+  }
+  .menu-item-desc { font-size: 0.85rem; color: var(--stone); line-height: 1.6; margin-bottom: 0.75rem; }
+  .menu-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+  .tag {
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.55rem;
+    border-radius: 2px;
+  }
+  .tag-gf { background: #e8f4ee; color: #2a6048; }
+  .tag-vg { background: #e8f0e8; color: #2a5030; }
+  .tag-v { background: #f0ece8; color: #6a4828; }
+  .tag-sig { background: var(--mist); color: var(--ocean); }
+
+  /* ── RESERVE ── */
+  #reserve {
+    background: var(--deep-blue);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  #reserve::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 50%, rgba(74,122,150,0.2) 0%, transparent 65%),
+                radial-gradient(ellipse at 70% 50%, rgba(44,74,94,0.3) 0%, transparent 65%);
+  }
+  #reserve .container { position: relative; z-index: 1; }
+  #reserve .section-label { color: var(--sky); }
+  #reserve .section-title { color: #fff; }
+  #reserve .section-desc { color: rgba(255,255,255,0.6); margin: 0 auto 3rem; text-align: center; }
+  .reserve-form {
+    max-width: 680px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 0.75rem; align-items: end;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 0.4rem; text-align: left; }
+  .form-group label {
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+  }
+  .form-group input, .form-group select {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: #fff;
+    padding: 0.75rem 1rem;
+    font-family: var(--sans);
+    font-size: 0.88rem;
+    border-radius: 2px;
+    outline: none;
+    transition: border-color 0.25s;
+    -webkit-appearance: none;
+  }
+  .form-group input::placeholder { color: rgba(255,255,255,0.35); }
+  .form-group input:focus, .form-group select:focus { border-color: rgba(255,255,255,0.5); }
+  .form-group select option { background: var(--deep-blue); color: #fff; }
+  .btn-reserve {
+    background: var(--foam);
+    color: var(--deep-blue);
+    padding: 0.75rem 1.75rem;
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: none; cursor: pointer;
+    white-space: nowrap;
+    border-radius: 2px;
+    transition: background 0.25s;
+  }
+  .btn-reserve:hover { background: #fff; }
+  .reserve-note {
+    margin-top: 1.25rem;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.4);
+  }
+
+  /* ── LOCATION ── */
+  #location { background: var(--sand); }
+  .location-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center;
+  }
+  .map-frame {
+    aspect-ratio: 4/3;
+    background: linear-gradient(160deg, var(--mist) 0%, var(--foam) 100%);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--dune);
+  }
+  .map-pin {
+    text-align: center;
+  }
+  .map-pin-circle {
+    width: 44px; height: 44px;
+    background: var(--ocean);
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    margin: 0 auto 1rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .map-pin-circle::after {
+    content: '';
+    width: 16px; height: 16px;
+    background: #fff;
+    border-radius: 50%;
+    transform: rotate(45deg);
+    display: block;
+  }
+  .map-label {
+    font-family: var(--serif);
+    font-size: 1.1rem;
+    color: var(--ocean);
+    font-style: italic;
+  }
+  .map-open-link {
+    display: inline-block;
+    margin-top: 1rem;
+    font-size: 0.75rem;
+    color: var(--tide);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--foam);
+    transition: border-color 0.2s;
+  }
+  .map-open-link:hover { border-color: var(--tide); }
+  .info-list { list-style: none; display: flex; flex-direction: column; gap: 1.5rem; margin-top: 2.5rem; }
+  .info-item { display: flex; gap: 1.25rem; align-items: flex-start; }
+  .info-icon {
+    width: 36px; height: 36px; flex-shrink: 0;
+    background: var(--cream);
+    border: 1px solid var(--dune);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem;
+  }
+  .info-content { display: flex; flex-direction: column; gap: 0.15rem; }
+  .info-title { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--pebble); }
+  .info-value { font-family: var(--serif); font-size: 1.05rem; color: var(--deep-blue); }
+  .info-value a { color: var(--ocean); text-decoration: none; }
+  .info-value a:hover { text-decoration: underline; }
+  .hours-grid { display: grid; grid-template-columns: auto auto; gap: 0.2rem 1.5rem; margin-top: 0.25rem; }
+  .hours-day { font-size: 0.82rem; color: var(--stone); }
+  .hours-time { font-size: 0.82rem; color: var(--charcoal); font-weight: 500; }
+
+  /* ── STICKY RESERVE ── */
+  .sticky-reserve {
+    position: fixed; bottom: 2rem; right: 2rem;
+    z-index: 90;
+    background: var(--ocean);
+    color: #fff;
+    padding: 0.85rem 1.6rem;
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    box-shadow: 0 4px 24px rgba(26,46,62,0.35);
+    transition: background 0.25s, transform 0.2s;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .sticky-reserve:hover { background: var(--deep-blue); transform: translateY(-2px); }
+  .sticky-reserve::before { content: '◇'; font-size: 0.65rem; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--charcoal);
+    padding: 4rem 2.5rem 2.5rem;
+    color: rgba(255,255,255,0.5);
+  }
+  .footer-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 3rem; margin-bottom: 3rem;
+  }
+  .footer-brand .nav-logo { display: block; margin-bottom: 1rem; font-size: 1.5rem; }
+  .footer-brand p { font-size: 0.82rem; line-height: 1.7; max-width: 240px; }
+  .footer-col h4 {
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 1rem;
+  }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+  .footer-col a {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.55);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-col a:hover { color: rgba(255,255,255,0.9); }
+  .footer-bottom {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    font-size: 0.75rem;
+  }
+  .schema-data { display: none; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .about-grid, .location-grid { grid-template-columns: 1fr; gap: 3rem; }
+    .about-visual { order: -1; }
+    .reserve-form { grid-template-columns: 1fr 1fr; }
+    .reserve-form .btn-reserve { grid-column: span 2; }
+    .footer-inner { grid-template-columns: 1fr 1fr; gap: 2rem; }
+  }
+  @media (max-width: 640px) {
+    nav { padding: 0 1.5rem; }
+    .nav-links { display: none; }
+    .nav-links.open { display: flex; flex-direction: column; position: fixed; top: 72px; left: 0; right: 0; background: rgba(26,46,62,0.97); backdrop-filter: blur(12px); padding: 2rem; gap: 1.5rem; }
+    .hamburger { display: flex; }
+    section { padding: 5rem 1.5rem; }
+    .reserve-form { grid-template-columns: 1fr; }
+    .reserve-form .btn-reserve { grid-column: span 1; }
+    .footer-inner { grid-template-columns: 1fr; }
+    .footer-bottom { flex-direction: column; gap: 0.5rem; text-align: center; }
+    .sticky-reserve { bottom: 1rem; right: 1rem; padding: 0.75rem 1.25rem; }
+    .about-stats { grid-template-columns: 1fr 1fr; }
+    .menu-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── SCROLL ANIMATIONS ── */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+</style>
+</head>
+<body>
+
+<!-- Schema.org Structured Data -->
+<script type="application/ld+json" class="schema-data">
+{
+  "@context": "https://schema.org",
+  "@type": "Restaurant",
+  "name": "Terrapin Creek Cafe",
+  "image": "https://terrapincreekcafe.com/og-image.jpg",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "1580 Eastshore Rd",
+    "addressLocality": "Bodega Bay",
+    "addressRegion": "CA",
+    "postalCode": "94923",
+    "addressCountry": "US"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 38.3324,
+    "longitude": -123.0567
+  },
+  "telephone": "+17078752700",
+  "servesCuisine": ["Californian", "Seafood", "Coastal"],
+  "priceRange": "$$$",
+  "openingHours": ["Tu-Su 17:00-21:00"],
+  "hasMap": "https://maps.google.com/?q=Terrapin+Creek+Cafe+Bodega+Bay"
+}
+</script>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">Terrapin <span>Creek</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#about">Our Story</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#reserve">Reserve</a></li>
+    <li><a href="#location">Visit</a></li>
+  </ul>
+  <a href="#reserve" class="nav-reserve">Book a Table</a>
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="wave-layer">
+    <div class="wave wave-1"></div>
+    <div class="wave wave-2"></div>
+    <div class="wave wave-3"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-badge">Michelin Recognized · Bodega Bay, California</div>
+    <h1 class="hero-title">
+      Where the Coast<br><em>Comes to Table</em>
+    </h1>
+    <p class="hero-sub">Fresh, seasonal, soulful — a neighborhood gem on the edge of the Pacific</p>
+    <div class="hero-ctas">
+      <a href="#reserve" class="btn-primary">Reserve a Table</a>
+      <a href="#menu" class="btn-outline">Explore the Menu</a>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-visual">
+        <div class="about-accent"></div>
+        <div class="about-img-frame">
+          <div class="about-img-text">"Food that tastes<br>like the ocean<br>remembers"</div>
+        </div>
+      </div>
+      <div class="about-text">
+        <div class="section-label reveal">Our Story</div>
+        <h2 class="section-title reveal reveal-delay-1">Casual by Choice,<br><em>Exceptional by Nature</em></h2>
+        <div class="michelin-badge reveal reveal-delay-2">✦ Michelin Recognized</div>
+        <p class="section-desc reveal reveal-delay-2">
+          Nestled in a converted cottage on Bodega Bay's eastern shore, Terrapin Creek Cafe has been a beloved fixture since 2008. We believe extraordinary food doesn't require ceremony — just honest ingredients, thoughtful technique, and the kind of hospitality that makes strangers feel like regulars.
+        </p>
+        <p class="section-desc reveal reveal-delay-3" style="margin-top:1.25rem;">
+          Our menu changes with the seasons and the tides. What arrives at your table was likely in the ocean or on the farm just days ago. This is coastal California cooking at its most genuine.
+        </p>
+        <div class="about-stats reveal">
+          <div class="stat">
+            <div class="stat-num">2008</div>
+            <div class="stat-label">Founded</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">5mi</div>
+            <div class="stat-label">From the Pacific</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">100%</div>
+            <div class="stat-label">Seasonal Menu</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">★</div>
+            <div class="stat-label">Michelin Recommended</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MENU -->
+<section id="menu">
+  <div class="container">
+    <div class="menu-header">
+      <div class="section-label reveal">Seasonal Menu</div>
+      <h2 class="section-title reveal reveal-delay-1">What the Sea &amp; <em>Land Offer Today</em></h2>
+      <p class="section-desc reveal reveal-delay-2">Our menu reflects what's freshest. Prices and dishes change with the seasons — we update them weekly.</p>
+    </div>
+    <div class="menu-tabs reveal">
+      <button class="menu-tab active" onclick="switchTab('starters')">Starters</button>
+      <button class="menu-tab" onclick="switchTab('mains')">Mains</button>
+      <button class="menu-tab" onclick="switchTab('desserts')">Desserts</button>
+      <button class="menu-tab" onclick="switchTab('wine')">Wine &amp; Drinks</button>
+    </div>
+
+    <!-- Starters -->
+    <div class="menu-panel active" id="tab-starters">
+      <div class="menu-grid">
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Dungeness Crab Bisque</span>
+            <span class="menu-item-price">$19</span>
+          </div>
+          <p class="menu-item-desc">Rich, creamy bisque of local Dungeness crab, finished with crème fraîche and fresh chives. Served with house sourdough.</p>
+          <div class="menu-tags"><span class="tag tag-gf">GF</span><span class="tag tag-sig">Signature</span></div>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Oysters on the Half Shell</span>
+            <span class="menu-item-price">$22</span>
+          </div>
+          <p class="menu-item-desc">Half dozen Tomales Bay oysters, mignonette, house cocktail sauce, fresh lemon. Market freshness guaranteed.</p>
+          <div class="menu-tags"><span class="tag tag-gf">GF</span></div>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Roasted Beet Salad</span>
+            <span class="menu-item-price">$16</span>
+          </div>
+          <p class="menu-item-desc">Heirloom beets, Point Reyes Blue, candied walnuts, arugula, citrus vinaigrette.</p>
+          <div class="menu-tags"><span class="tag tag-vg">VG</span><span class="tag tag-gf">GF</span></div>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Clam Chowder</span>
+            <span class="menu-item-price">$17</span>
+          </div>
+          <p class="menu-item-desc">New England–style with Pacific littlenecks, smoked bacon, Yukon Gold potatoes, house bread bowl.</p>
+          <div class="menu-tags"><span class="tag tag-sig">Signature</span></div>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Burrata &amp; Heirloom Tomato</span>
+            <span class="menu-item-price">$18</span>
+          </div>
+          <p class="menu-item-desc">Petaluma burrata, seasonal heirloom tomatoes, basil oil, aged balsamic, Maldon salt.</p>
+          <div class="menu-tags"><span class="tag tag-v">V</span><span class="tag tag-gf">GF</span></div>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Crispy Calamari</span>
+            <span class="menu-item-price">$17</span>
+          </div>
+          <p class="menu-item-desc">Lightly floured, flash-fried local squid, lemon aioli, pickled pepperoncini, fresh herbs.</p>
+          <div class="menu-tags"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mains -->
+    <div class="menu-panel" id="tab-mains">
+      <div class="menu-grid">
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Pan-Seared Halibut</span>
+            <span class="menu-item-price">$44</span>
+          </div>
+          <p class="menu-item-desc">Pacific halibut, spring pea purée, crispy capers, brown butter, microgreens. Sourced daily from Bodega Bay fishermen.</p>
+          <div class="menu-tags"><span class="tag tag-gf">GF</span><span class="tag tag-sig">Signature</span></div>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Grilled Sonoma Duck Breast</span>
+            <span class="menu-item-price">$42</span>
+          </div>
+          <p class="menu-item-desc">Cherry-glazed Sonoma duck, roasted farro, wilted chard, duck jus reduction.</p>
+          <div class="menu-tags"><span class="tag tag-gf">GF</span></div>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Coastal Bouillabaisse</span>
+            <span class="menu-item-price">$46</span>
+          </div>
+          <p class="menu-item-desc">Dungeness crab, clams, mussels, shrimp in saffron broth. Rouille, grilled baguette.</p>
+          <div class="menu-tags"><span class="tag tag-sig">Signature</span></div>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Wild Mushroom Risotto</span>
+            <span class="menu-item-price">$34</span>
+          </div>
+          <p class="menu-item-desc">Foraged Sonoma mushrooms, Arborio rice, Parmigiano-Reggiano, truffle oil, fresh thyme.</p>
+          <div class="menu-tags"><span class="tag tag-vg">VG</span><span class="tag tag-gf">GF</span></div>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">12oz Niman Ranch Ribeye</span>
+            <span class="menu-item-price">$56</span>
+          </div>
+          <p class="menu-item-desc">Dry-aged ribeye, roasted garlic butter, bordelaise, truffle frites, watercress.</p>
+          <div class="menu-tags"><span class="tag tag-gf">GF</span></div>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Seared Scallops</span>
+            <span class="menu-item-price">$40</span>
+          </div>
+          <p class="menu-item-desc">Diver scallops, roasted corn succotash, bacon lardon, chive oil, lemon zest.</p>
+          <div class="menu-tags"><span class="tag tag-gf">GF</span><span class="tag tag-sig">Signature</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Desserts -->
+    <div class="menu-panel" id="tab-desserts">
+      <div class="menu-grid">
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Salted Caramel Pots de Crème</span>
+            <span class="menu-item-price">$13</span>
+          </div>
+          <p class="menu-item-desc">Silky custard, sea salt caramel, vanilla Chantilly, hazelnut brittle.</p>
+          <div class="menu-tags"><span class="tag tag-gf">GF</span><span class="tag tag-sig">Signature</span></div>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Warm Chocolate Lava Cake</span>
+            <span class="menu-item-price">$14</span>
+          </div>
+          <p class="menu-item-desc">Valrhona chocolate, molten center, Straus Family vanilla bean ice cream, raspberry coulis.</p>
+          <div class="menu-tags"><span class="tag tag-v">V</span></div>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Seasonal Fruit Tart</span>
+            <span class="menu-item-price">$12</span>
+          </div>
+          <p class="menu-item-desc">Buttery pastry shell, vanilla pastry cream, whichever fruit the season brings. Ask your server.</p>
+          <div class="menu-tags"><span class="tag tag-v">V</span></div>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Artisan Cheese Board</span>
+            <span class="menu-item-price">$22</span>
+          </div>
+          <p class="menu-item-desc">Three Northern California cheeses, honeycomb, marcona almonds, fig jam, walnut crisps.</p>
+          <div class="menu-tags"><span class="tag tag-vg">VG</span><span class="tag tag-gf">GF</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wine -->
+    <div class="menu-panel" id="tab-wine">
+      <div class="menu-grid">
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Littorai Pinot Noir</span>
+            <span class="menu-item-price">$22 / $88</span>
+          </div>
+          <p class="menu-item-desc">Sonoma Coast. Elegant, earthy Pinot with notes of dark cherry and forest floor. 2021 vintage.</p>
+          <div class="menu-tags"><span class="tag tag-gf">GF</span></div>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Flowers Chardonnay</span>
+            <span class="menu-item-price">$19 / $76</span>
+          </div>
+          <p class="menu-item-desc">Sonoma Coast. Bright and mineral, with stone fruit and citrus. Perfect with our seafood menu.</p>
+          <div class="menu-tags"><span class="tag tag-gf">GF</span><span class="tag tag-sig">Sommelier Pick</span></div>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">House Rosé</span>
+            <span class="menu-item-price">$13 / $52</span>
+          </div>
+          <p class="menu-item-desc">Dry Provençal-style rosé, strawberry, white peach. Our most-loved everyday pour.</p>
+          <div class="menu-tags"><span class="tag tag-gf">GF</span></div>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Coastal Spritz</span>
+            <span class="menu-item-price">$14</span>
+          </div>
+          <p class="menu-item-desc">House-made elderflower cordial, Aperol, sparkling wine, fresh citrus, sea salt rim.</p>
+          <div class="menu-tags"><span class="tag tag-vg">VG</span></div>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Fog Point Negroni</span>
+            <span class="menu-item-price">$16</span>
+          </div>
+          <p class="menu-item-desc">Hendrick's gin, Campari, Carpano Antica, kelp-infused simple syrup, expressed orange peel.</p>
+          <div class="menu-tags"><span class="tag tag-sig">Signature</span></div>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-header">
+            <span class="menu-item-name">Sparkling Water &amp; Soft Drinks</span>
+            <span class="menu-item-price">$5</span>
+          </div>
+          <p class="menu-item-desc">Topo Chico, house-made lemonades, seasonal switchel, and assorted non-alcoholic options.</p>
+          <div class="menu-tags"><span class="tag tag-vg">VG</span><span class="tag tag-gf">GF</span></div>
+        </div>
+      </div>
+    </div>
+
+    <p style="text-align:center; margin-top:2.5rem; font-size:0.78rem; color:var(--pebble);">
+      <span style="background:var(--mist); padding:0.2rem 0.5rem; border-radius:2px; margin-right:0.3rem;">GF</span> Gluten-Free &nbsp;
+      <span style="background:#e8f4ee; color:#2a6048; padding:0.2rem 0.5rem; border-radius:2px; margin-right:0.3rem;">VG</span> Vegan &nbsp;
+      <span style="background:#f0ece8; color:#6a4828; padding:0.2rem 0.5rem; border-radius:2px;">V</span> Vegetarian
+    </p>
+  </div>
+</section>
+
+<!-- RESERVE -->
+<section id="reserve">
+  <div class="container">
+    <div class="section-label">Reservations</div>
+    <h2 class="section-title" style="color:#fff;">Secure Your <em style="color:var(--sky);">Place at the Table</em></h2>
+    <p class="section-desc">We recommend reserving ahead, especially on weekends. Walk-ins welcome based on availability.</p>
+    <div class="reserve-form">
+      <div class="form-group">
+        <label for="r-date">Date</label>
+        <input type="date" id="r-date">
+      </div>
+      <div class="form-group">
+        <label for="r-time">Time</label>
+        <select id="r-time">
+          <option>5:00 PM</option>
+          <option>5:30 PM</option>
+          <option>6:00 PM</option>
+          <option>6:30 PM</option>
+          <option>7:00 PM</option>
+          <option>7:30 PM</option>
+          <option>8:00 PM</option>
+          <option>8:30 PM</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="r-guests">Guests</label>
+        <select id="r-guests">
+          <option>1 Guest</option>
+          <option>2 Guests</option>
+          <option>3 Guests</option>
+          <option>4 Guests</option>
+          <option>5 Guests</option>
+          <option>6+ Guests</option>
+        </select>
+      </div>
+      <button class="btn-reserve" onclick="handleReserve()">Find a Table</button>
+    </div>
+    <p class="reserve-note">For parties of 7 or more, please call us at <a href="tel:+17078752700" style="color:rgba(255,255,255,0.6);">(707) 875-2700</a></p>
+  </div>
+</section>
+
+<!-- LOCATION -->
+<section id="location">
+  <div class="container">
+    <div class="location-grid">
+      <div>
+        <div class="section-label reveal">Find Us</div>
+        <h2 class="section-title reveal reveal-delay-1">On the Edge of<br><em>Bodega Bay</em></h2>
+        <p class="section-desc reveal reveal-delay-2">We're tucked into the eastern shore of Bodega Bay, about 65 miles north of San Francisco on the Sonoma Coast. The drive is half the experience.</p>
+        <ul class="info-list reveal reveal-delay-2">
+          <li class="info-item">
+            <div class="info-icon">📍</div>
+            <div class="info-content">
+              <span class="info-title">Address</span>
+              <span class="info-value"><a href="https://maps.google.com/?q=Terrapin+Creek+Cafe+Bodega+Bay" target="_blank">1580 Eastshore Rd, Bodega Bay, CA 94923</a></span>
+            </div>
+          </li>
+          <li class="info-item">
+            <div class="info-icon">📞</div>
+            <div class="info-content">
+              <span class="info-title">Phone</span>
+              <span class="info-value"><a href="tel:+17078752700">(707) 875-2700</a></span>
+            </div>
+          </li>
+          <li class="info-item">
+            <div class="info-icon">🕐</div>
+            <div class="info-content">
+              <span class="info-title">Hours</span>
+              <div class="hours-grid">
+                <span class="hours-day">Tuesday – Friday</span>
+                <span class="hours-time">5:00 – 9:00 PM</span>
+                <span class="hours-day">Saturday – Sunday</span>
+                <span class="hours-time">4:30 – 9:30 PM</span>
+                <span class="hours-day">Monday</span>
+                <span class="hours-time">Closed</span>
+              </div>
+            </div>
+          </li>
+          <li class="info-item">
+            <div class="info-icon">🚗</div>
+            <div class="info-content">
+              <span class="info-title">Getting Here</span>
+              <span class="info-value" style="font-size:0.88rem; font-family:var(--sans); color:var(--stone); font-style:normal;">65 miles north of SF via Hwy 1. Free parking on site.</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="reveal reveal-delay-2">
+        <div class="map-frame">
+          <div class="map-pin">
+            <div class="map-pin-circle"></div>
+            <div class="map-label">Terrapin Creek Cafe</div>
+            <div style="font-size:0.78rem; color:var(--stone); margin-top:0.4rem;">Bodega Bay, CA</div>
+            <a href="https://maps.google.com/?q=Terrapin+Creek+Cafe+Bodega+Bay" target="_blank" class="map-open-link">Open in Google Maps ↗</a>
+          </div>
+        </div>
+        <div style="margin-top:1.5rem; padding:1.25rem; background:var(--cream); border:1px solid var(--dune); border-radius:4px;">
+          <p style="font-family:var(--serif); font-size:1rem; color:var(--deep-blue); font-style:italic; line-height:1.5;">"One of the most memorable meals of our trip. The halibut was extraordinary and the setting absolutely magical."</p>
+          <p style="font-size:0.75rem; color:var(--pebble); margin-top:0.75rem; letter-spacing:0.05em;">— MICHELIN GUIDE CALIFORNIA</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="#hero" class="nav-logo">Terrapin <span>Creek</span></a>
+      <p>A Michelin-recognized neighborhood cafe on the Sonoma Coast. Open Tuesday through Sunday for dinner.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigate</h4>
+      <ul>
+        <li><a href="#about">Our Story</a></li>
+        <li><a href="#menu">Menu</a></li>
+        <li><a href="#reserve">Reservations</a></li>
+        <li><a href="#location">Location</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Visit</h4>
+      <ul>
+        <li><a href="#">1580 Eastshore Rd</a></li>
+        <li><a href="#">Bodega Bay, CA 94923</a></li>
+        <li><a href="tel:+17078752700">(707) 875-2700</a></li>
+        <li><a href="mailto:hello@terrapincreekcafe.com">hello@terrapincreekcafe.com</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Follow</h4>
+      <ul>
+        <li><a href="#">Instagram</a></li>
+        <li><a href="#">Facebook</a></li>
+        <li><a href="#">OpenTable Reviews</a></li>
+        <li><a href="#">Press &amp; Media</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Terrapin Creek Cafe. All rights reserved.</span>
+    <span>Bodega Bay · Sonoma Coast · California</span>
+  </div>
+</footer>
+
+<!-- STICKY RESERVE -->
+<a href="#reserve" class="sticky-reserve" id="stickyBtn">Reserve a Table</a>
+
+<script>
+  // Nav scroll
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+    document.getElementById('stickyBtn').style.opacity = window.scrollY > 300 ? '1' : '0';
+    document.getElementById('stickyBtn').style.pointerEvents = window.scrollY > 300 ? 'auto' : 'none';
+  });
+  document.getElementById('stickyBtn').style.opacity = '0';
+
+  // Mobile menu
+  function toggleMenu() {
+    document.getElementById('navLinks').classList.toggle('open');
+  }
+
+  // Menu tabs
+  function switchTab(name) {
+    document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.menu-panel').forEach(p => p.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('tab-' + name).classList.add('active');
+  }
+
+  // Reveal on scroll
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); } });
+  }, { threshold: 0.15 });
+  reveals.forEach(r => observer.observe(r));
+
+  // Reserve handler
+  function handleReserve() {
+    const date = document.getElementById('r-date').value;
+    const time = document.getElementById('r-time').value;
+    const guests = document.getElementById('r-guests').value;
+    if (!date) { alert('Please select a date.'); return; }
+    alert(`Redirecting to OpenTable for ${guests} on ${new Date(date + 'T12:00').toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'})} at ${time}.\n\n(In production, this integrates with OpenTable or Tock API.)`);
+  }
+
+  // Set min date for reservation
+  const dateInput = document.getElementById('r-date');
+  dateInput.min = new Date().toISOString().split('T')[0];
+</script>
+
+</body>
+</html>

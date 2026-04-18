@@ -1,0 +1,124 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.menu {
+  @include section-padding;
+  background: $cream;
+
+  &__container { @include container; }
+
+  &__header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  &__label { @include section-label; }
+  &__title { @include section-title; }
+
+  &__desc {
+    color: $stone;
+    font-size: 1rem;
+    line-height: 1.75;
+    max-width: 540px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  // ── Tabs ──────────────────────────────────────────
+  &__tabs {
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px solid $dune;
+    margin-bottom: 3.5rem;
+    flex-wrap: wrap;
+  }
+
+  &__tab {
+    background: none;
+    border: none;
+    padding: 0.75rem 1.75rem;
+    font-family: $sans;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: $pebble;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color $transition-fast, border-color $transition-fast;
+
+    &:hover:not(&--active) { color: $stone; }
+
+    &--active {
+      color: $deep-blue;
+      border-bottom-color: $ocean;
+    }
+  }
+
+  // ── Grid ──────────────────────────────────────────
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+
+    @include respond-to(sm) { grid-template-columns: 1fr; }
+  }
+
+  // ── Legend ────────────────────────────────────────
+  &__legend {
+    text-align: center;
+    margin-top: 2.5rem;
+    font-size: 0.78rem;
+    color: $pebble;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+}
+
+// ── Menu Card ─────────────────────────────────────────
+.menu-card {
+  padding: 1.75rem;
+  border-bottom: 1px solid $mist;
+  border-right: 1px solid $mist;
+  transition: background $transition-fast;
+
+  &:hover { background: $sand; }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.4rem;
+  }
+
+  &__name {
+    font-family: $serif;
+    font-size: 1.15rem;
+    font-weight: 400;
+    color: $deep-blue;
+  }
+
+  &__price {
+    font-family: $serif;
+    font-size: 1.05rem;
+    font-weight: 300;
+    color: $tide;
+    white-space: nowrap;
+    margin-left: 1rem;
+  }
+
+  &__desc {
+    font-size: 0.85rem;
+    color: $stone;
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+  }
+
+  &__tags {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+}

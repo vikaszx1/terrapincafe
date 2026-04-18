@@ -1,0 +1,109 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 0 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+  transition: background $transition-med, backdrop-filter $transition-med;
+
+  &--scrolled {
+    background: rgba(26, 46, 62, 0.92);
+    backdrop-filter: blur(12px);
+  }
+
+  &__logo {
+    font-family: $serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: #fff;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+
+    span {
+      font-style: italic;
+      color: $foam;
+    }
+  }
+
+  &__links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+
+    a {
+      color: rgba(255, 255, 255, 0.82);
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: color $transition-fast;
+
+      &:hover { color: #fff; }
+    }
+
+    @include respond-to(sm) {
+      display: none;
+      flex-direction: column;
+      position: fixed;
+      top: 72px; left: 0; right: 0;
+      background: rgba(26, 46, 62, 0.97);
+      backdrop-filter: blur(12px);
+      padding: 2rem;
+      gap: 1.5rem;
+
+      &--open { display: flex; }
+    }
+  }
+
+  &__reserve {
+    @include btn-base;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: #fff;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.75rem;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: #fff;
+    }
+
+    @include respond-to(sm) { display: none; }
+  }
+
+  &__hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0.25rem;
+
+    span {
+      display: block;
+      width: 24px;
+      height: 1.5px;
+      background: #fff;
+      transition: transform 0.3s, opacity 0.3s;
+      transform-origin: center;
+    }
+
+    &--open {
+      span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+      span:nth-child(2) { opacity: 0; }
+      span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+    }
+
+    @include respond-to(sm) { display: flex; }
+  }
+
+  @include respond-to(sm) { padding: 0 1.5rem; }
+}

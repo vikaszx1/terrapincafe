@@ -1,0 +1,48 @@
+@use 'variables' as *;
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: $sans;
+  background: $cream;
+  color: $charcoal;
+  overflow-x: hidden;
+}
+
+// ── Reveal Animation ──────────────────────────────────
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+
+  &.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  &.delay-1 { transition-delay: 0.1s; }
+  &.delay-2 { transition-delay: 0.2s; }
+  &.delay-3 { transition-delay: 0.3s; }
+}
+
+// ── Tag badges ────────────────────────────────────────
+.tag {
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+  border-radius: 2px;
+
+  &-gf  { background: #e8f0f4; color: $ocean; }
+  &-vg  { background: #e8f4ee; color: #2a6048; }
+  &-v   { background: #f0ece8; color: #6a4828; }
+  &-sig { background: $mist;   color: $ocean;  }
+}

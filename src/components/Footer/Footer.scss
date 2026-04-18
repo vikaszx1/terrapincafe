@@ -1,0 +1,92 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.footer {
+  background: $charcoal;
+  padding: 4rem 2.5rem 2.5rem;
+  color: rgba(255, 255, 255, 0.5);
+
+  &__inner {
+    @include container;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 3rem;
+    margin-bottom: 3rem;
+
+    @include respond-to(md) {
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    @include respond-to(sm) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__brand {
+    p {
+      font-size: 0.82rem;
+      line-height: 1.7;
+      max-width: 240px;
+    }
+  }
+
+  &__logo {
+    display: block;
+    margin-bottom: 1rem;
+    font-family: $serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: #fff;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+
+    span {
+      font-style: italic;
+      color: $foam;
+    }
+  }
+
+  &__col {
+    h4 {
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.3);
+      margin-bottom: 1rem;
+      font-weight: 400;
+    }
+
+    ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    a {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.55);
+      text-decoration: none;
+      transition: color $transition-fast;
+
+      &:hover { color: rgba(255, 255, 255, 0.9); }
+    }
+  }
+
+  &__bottom {
+    @include container;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.75rem;
+
+    @include respond-to(sm) {
+      flex-direction: column;
+      gap: 0.5rem;
+      text-align: center;
+    }
+  }
+}

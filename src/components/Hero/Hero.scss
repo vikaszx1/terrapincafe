@@ -1,0 +1,144 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes wave1 {
+  0%, 100% { transform: translateX(-10%) scaleY(1); }
+  50%       { transform: translateX(0%)   scaleY(1.1); }
+}
+
+@keyframes wave2 {
+  0%, 100% { transform: translateX(0%)  scaleY(1); }
+  50%       { transform: translateX(-8%) scaleY(0.95); }
+}
+
+.hero {
+  height: 100vh;
+  min-height: 640px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  &__bg {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to bottom, rgba(15,30,42,0.55) 0%, rgba(15,30,42,0.3) 50%, rgba(15,30,42,0.65) 100%),
+      linear-gradient(135deg, #1a3a50 0%, #2c5a78 30%, #3a7090 55%, #2a5068 80%, #1a2e3e 100%);
+  }
+
+  &__wave-layer {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 200px;
+    overflow: hidden;
+  }
+
+  &__wave {
+    position: absolute;
+    bottom: 0;
+    width: 200%;
+    height: 100%;
+    background: $cream;
+    border-radius: 50% 50% 0 0 / 30% 30% 0 0;
+
+    &--1 { animation: wave1 8s ease-in-out infinite; opacity: 0.15; transform-origin: center bottom; }
+    &--2 { animation: wave2 10s ease-in-out infinite; opacity: 0.10; transform-origin: center bottom; }
+    &--3 { bottom: -10px; opacity: 1; border-radius: 60% 60% 0 0 / 20% 20% 0 0; }
+  }
+
+  &__content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 0 1.5rem;
+    animation: fadeUp 1.2s ease both;
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid rgba(200, 221, 232, 0.45);
+    color: $foam;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 0.4rem 1rem;
+    margin-bottom: 2rem;
+    border-radius: 2px;
+    animation: fadeUp 1.2s 0.1s ease both;
+
+    span { font-size: 0.6rem; }
+  }
+
+  &__title {
+    font-family: $serif;
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    font-weight: 300;
+    color: #fff;
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.25em;
+    animation: fadeUp 1.2s 0.2s ease both;
+
+    em {
+      font-style: italic;
+      color: $foam;
+      display: block;
+    }
+  }
+
+  &__sub {
+    font-family: $serif;
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    font-weight: 300;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 2.5rem;
+    letter-spacing: 0.02em;
+    animation: fadeUp 1.2s 0.3s ease both;
+  }
+
+  &__ctas {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeUp 1.2s 0.4s ease both;
+  }
+}
+
+// ── Shared button styles ───────────────────────────────
+.btn-primary {
+  @include btn-base;
+  background: $foam;
+  color: $deep-blue;
+  padding: 0.85rem 2.2rem;
+  border: none;
+
+  &:hover {
+    background: #fff;
+    transform: translateY(-1px);
+  }
+}
+
+.btn-outline {
+  @include btn-base;
+  background: transparent;
+  color: #fff;
+  padding: 0.85rem 2.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  font-weight: 400;
+
+  &:hover {
+    border-color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
